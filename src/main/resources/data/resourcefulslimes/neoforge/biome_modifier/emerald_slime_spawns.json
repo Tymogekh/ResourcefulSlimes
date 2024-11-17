@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#c:is_jungle",
+  "spawners": [
+    {
+      "type": "resourcefulslimes:resource_slime",
+      "weight": 0.5,
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ]
+}
