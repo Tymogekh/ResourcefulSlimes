@@ -4,7 +4,7 @@
   "spawners": [
     {
       "type": "resourcefulslimes:resource_slime",
-      "weight": 1,
+      "weight": 2,
       "minCount": 1,
       "maxCount": 1
     }

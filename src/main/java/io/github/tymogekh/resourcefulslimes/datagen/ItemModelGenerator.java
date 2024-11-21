@@ -16,11 +16,13 @@ public class ItemModelGenerator extends ItemModelProvider {
     @Override
     protected void registerModels() {
         basicItem(ResourcefulSlimes.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get());
+        basicItem(ResourcefulSlimes.RESOURCE_SLIME_BUCKET.get());
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
             if(variant.isModded() && variant.getDropItem().toString().contains("ingot")) {
                 withExistingParent(variant.getDropItem().toString(), ResourceLocation.withDefaultNamespace("item/iron_ingot"));
             }
         }
         withExistingParent(ResourcefulSlimes.CERTUS_QUARTZ.getRegisteredName(), ResourceLocation.withDefaultNamespace("item/quartz"));
+        withExistingParent(ResourcefulSlimes.SLIME_FEEDER_ITEM.getRegisteredName(), ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "block/slime_feeder"));
     }
 }

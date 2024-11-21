@@ -1,9 +1,14 @@
 package io.github.tymogekh.resourcefulslimes;
 
+import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
+import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
+import io.github.tymogekh.resourcefulslimes.blockentity.menu.SlimeFeederMenu;
+import io.github.tymogekh.resourcefulslimes.blockentity.screen.SlimeFeederMenuScreen;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import io.github.tymogekh.resourcefulslimes.datagen.*;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.entity.renderer.ResourceSlimeRenderer;
+import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -15,8 +20,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.IEventBus;
@@ -25,8 +36,10 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
@@ -44,6 +57,9 @@ public class ResourcefulSlimes {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MOD_ID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(BuiltInRegistries.MENU, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
     public static final DeferredHolder<EntityType<?>, EntityType<ResourceSlime>> RESOURCE_SLIME = ENTITY_TYPES.register("resource_slime",
@@ -52,6 +68,14 @@ public class ResourcefulSlimes {
 
     public static final DeferredHolder<Item, DeferredSpawnEggItem> RANDOM_RESOURCE_SLIME_SPAWN_EGG = ITEMS.register("random_resource_slime_spawn_egg",
             () -> new DeferredSpawnEggItem(RESOURCE_SLIME, 0xffffff, 0xffffff, new Item.Properties()));
+
+    public static final DeferredHolder<Item, ResourceSlimeBucket> RESOURCE_SLIME_BUCKET = ITEMS.register("resource_slime_bucket", ResourceSlimeBucket::new);
+
+    public static final DeferredHolder<Block, SlimeFeederBlock> SLIME_FEEDER_BLOCK = BLOCKS.register("slime_feeder", () -> new SlimeFeederBlock(BlockBehaviour.Properties.of().sound(SoundType.STONE).strength(0.6F).explosionResistance(0.6F)));
+    public static final DeferredHolder<Item, BlockItem> SLIME_FEEDER_ITEM = ITEMS.register("slime_feeder", () -> new BlockItem(SLIME_FEEDER_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SlimeFeederBlockEntity>> SLIME_FEEDER_ENTITY = BLOCK_ENTITY_TYPES.register("slime_feeder",
+            () -> BlockEntityType.Builder.of(SlimeFeederBlockEntity::new, SLIME_FEEDER_BLOCK.get()).build(null));
+    public static final DeferredHolder<MenuType<?>, MenuType<SlimeFeederMenu>> SLIME_FEEDER_MENU = MENUS.register("slime_feeder", () -> IMenuTypeExtension.create(SlimeFeederMenu::new));
 
     public static final DeferredHolder<Item, Item> TIN_INGOT = ITEMS.register("tin_ingot", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> ALUMINIUM_INGOT = ITEMS.register("aluminium_ingot", () -> new Item(new Item.Properties()));
@@ -68,6 +92,8 @@ public class ResourcefulSlimes {
             .icon(() -> RANDOM_RESOURCE_SLIME_SPAWN_EGG.get().getDefaultInstance())
             .displayItems(((itemDisplayParameters, output) -> {
                 output.accept(RANDOM_RESOURCE_SLIME_SPAWN_EGG.get());
+                output.accept(RESOURCE_SLIME_BUCKET.get());
+                output.accept(SLIME_FEEDER_ITEM.get());
                 for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
                     if(variant.isModded()) {
                         output.accept(variant.getDropItem());
@@ -77,14 +103,22 @@ public class ResourcefulSlimes {
 
     public ResourcefulSlimes(IEventBus bus, ModContainer container){
         container.registerConfig(ModConfig.Type.COMMON, Config.SPEC, MOD_ID + "-common.toml");
-        ENTITY_TYPES.register(bus);
+        BLOCKS.register(bus);
         ITEMS.register(bus);
+        MENUS.register(bus);
+        BLOCK_ENTITY_TYPES.register(bus);
+        ENTITY_TYPES.register(bus);
         CREATIVE_TABS.register(bus);
+        bus.addListener(this::registerScreens);
         bus.addListener(this::gatherData);
         bus.addListener(this::registerItemColors);
         bus.addListener(this::entityAttributes);
         bus.addListener(this::registerSpawnRules);
         bus.addListener(this::layerDefinition);
+    }
+
+    private void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(SLIME_FEEDER_MENU.get(), SlimeFeederMenuScreen::new);
     }
 
 

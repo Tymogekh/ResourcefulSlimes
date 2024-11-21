@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "#c:is_badlands",
+  "biomes": "#c:is_jungle",
   "spawners": [
     {
       "type": "resourcefulslimes:resource_slime",

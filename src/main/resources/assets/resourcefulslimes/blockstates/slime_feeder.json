@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "filled=false": {
+      "model": "resourcefulslimes:block/slime_feeder"
+    },
+    "filled=true": {
+      "model": "resourcefulslimes:block/slime_feeder_filled"
+    }
+  }
+}

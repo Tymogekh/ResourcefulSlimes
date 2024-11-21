@@ -1,11 +1,13 @@
-// 1.21.1	2024-11-16T20:39:19.3871817	Item Models: resourcefulslimes
+// 1.21.1	2024-11-21T18:15:21.1512121	Item Models: resourcefulslimes
 a3202e464b8861e9609e90634d91705894f22e3f assets/resourcefulslimes/models/item/aluminium_ingot.json
 34ec85bdc676a31ceba145f2b90dbd788f8186ce assets/resourcefulslimes/models/item/certus_quartz.json
 a3202e464b8861e9609e90634d91705894f22e3f assets/resourcefulslimes/models/item/lead_ingot.json
 a3202e464b8861e9609e90634d91705894f22e3f assets/resourcefulslimes/models/item/nickel_ingot.json
 a3202e464b8861e9609e90634d91705894f22e3f assets/resourcefulslimes/models/item/osmium_ingot.json
 2ccc1be266a7a1443e136ab52bab578cb658db7b assets/resourcefulslimes/models/item/random_resource_slime_spawn_egg.json
+207690a4f32d16257c819ce102267f3da54538fa assets/resourcefulslimes/models/item/resource_slime_bucket.json
 a3202e464b8861e9609e90634d91705894f22e3f assets/resourcefulslimes/models/item/silver_ingot.json
+eab9c2b7a362d6bfec8fa679f7568d4117c45973 assets/resourcefulslimes/models/item/slime_feeder.json
 a3202e464b8861e9609e90634d91705894f22e3f assets/resourcefulslimes/models/item/tin_ingot.json
 a3202e464b8861e9609e90634d91705894f22e3f assets/resourcefulslimes/models/item/uranium_ingot.json
 a3202e464b8861e9609e90634d91705894f22e3f assets/resourcefulslimes/models/item/zinc_ingot.json

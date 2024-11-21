@@ -1,10 +1,10 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "#c:is_cave",
+  "biomes": "#c:is_dry_nether",
   "spawners": [
     {
       "type": "resourcefulslimes:resource_slime",
-      "weight": 0.75,
+      "weight": 1,
       "minCount": 1,
       "maxCount": 1
     }

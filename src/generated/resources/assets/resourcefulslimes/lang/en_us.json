@@ -1,4 +1,5 @@
 {
+  "block.resourcefulslimes.slime_feeder": "Slime Feeder",
   "entity.resourcefulslimes.resource_slime": "Resource Slime",
   "item.resourcefulslimes.aluminium_ingot": "Aluminium Ingot",
   "item.resourcefulslimes.certus_quartz": "Certus Quartz",
@@ -6,6 +7,7 @@
   "item.resourcefulslimes.nickel_ingot": "Nickel Ingot",
   "item.resourcefulslimes.osmium_ingot": "Osmium Ingot",
   "item.resourcefulslimes.random_resource_slime_spawn_egg": "Random Resource Slime Spawn Egg",
+  "item.resourcefulslimes.resource_slime_bucket": "Resource Slime Bucket",
   "item.resourcefulslimes.silver_ingot": "Silver Ingot",
   "item.resourcefulslimes.tin_ingot": "Tin Ingot",
   "item.resourcefulslimes.uranium_ingot": "Uranium Ingot",

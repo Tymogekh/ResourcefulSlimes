@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "#c:is_mountain",
+  "biomes": "#c:is_cave",
   "spawners": [
     {
       "type": "resourcefulslimes:resource_slime",

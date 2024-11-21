@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures":{
+    "down": "minecraft:block/cobblestone",
+    "east": "resourcefulslimes:block/slime_feeder",
+    "north": "resourcefulslimes:block/slime_feeder",
+    "particle": "resourcefulslimes:block/slime_feeder",
+    "south": "resourcefulslimes:block/slime_feeder",
+    "up": "minecraft:block/oak_planks",
+    "west": "resourcefulslimes:block/slime_feeder"
+  }
+}
