@@ -1,5 +1,6 @@
 {
   "block.resourcefulslimes.slime_feeder": "Slime Feeder",
+  "container.slimeFeeder": "Slime Feeder",
   "entity.resourcefulslimes.resource_slime": "Resource Slime",
   "item.resourcefulslimes.aluminium_ingot": "Aluminium Ingot",
   "item.resourcefulslimes.certus_quartz": "Certus Quartz",

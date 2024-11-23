@@ -21,7 +21,7 @@ public class SlimeFeederMenuScreen extends AbstractContainerScreen<SlimeFeederMe
     @Override
     protected void renderBg(@NotNull GuiGraphics guiGraphics, float v, int i, int i1) {
         renderTransparentBackground(guiGraphics);
-        guiGraphics.blit(ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "textures/gui/slime_feeder.png"), 0, 0, this.width, this.height, 0, 0, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "textures/gui/slime_feeder.png"), this.leftPos, this.topPos, 0, 0 ,this.imageWidth, this.imageHeight);
     }
 
     @Override

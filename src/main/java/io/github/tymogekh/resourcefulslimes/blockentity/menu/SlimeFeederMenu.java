@@ -27,15 +27,15 @@ public class SlimeFeederMenu extends AbstractContainerMenu {
         super(menuType, containerId);
         this.access = access;
         SlimeFeederBlockEntity blockEntity1 = (SlimeFeederBlockEntity) blockEntity;
+        addSlot(new SlimeFeederSlot(blockEntity1.items, 0, 62, 31));
         for(int column = 0; column < 3; column++){
             for(int row = 0; row < 9; row++){
-                addSlot(new Slot(inventory, 9 + column + row * 9, 8 + column*18, 84 + row*18));
+                addSlot(new Slot(inventory, 9 + row + column * 9, 8 + row*18, 84 + column*18));
             }
         }
-        for(int column = 0; column < 9; column++){
-            addSlot(new Slot(inventory, column, 8 + column * 18, 142));
+        for(int hotbarColumn = 0; hotbarColumn < 9; hotbarColumn++){
+            addSlot(new Slot(inventory, hotbarColumn, 8 + hotbarColumn * 18, 142));
         }
-        addSlot(new SlimeFeederSlot(blockEntity1.items, 37, 62, 32));
     }
 
     @Override
@@ -43,8 +43,19 @@ public class SlimeFeederMenu extends AbstractContainerMenu {
         Slot slot = this.getSlot(i);
         ItemStack stack = ItemStack.EMPTY;
         ItemStack stack1 = slot.getItem();
-        if(this.moveItemStackTo(stack1, 36, 37, false)){
+        if(slot.hasItem()){
             stack = stack1;
+            if(i != 0){
+                if(stack1.getFoodProperties(player) == null || !this.moveItemStackTo(stack, 0, 1, false)){
+                    return ItemStack.EMPTY;
+                }
+            } else {
+                if(!this.moveItemStackTo(stack, 1, 37, false)){
+                    return ItemStack.EMPTY;
+                }
+            }
+            slot.onTake(player, stack);
+            slot.setChanged();
         }
         return stack;
     }

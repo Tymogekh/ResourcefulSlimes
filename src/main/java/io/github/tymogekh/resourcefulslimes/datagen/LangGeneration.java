@@ -22,6 +22,7 @@ public class LangGeneration extends LanguageProvider {
         add(ResourcefulSlimes.RESOURCE_SLIME_BUCKET.get(), "Resource Slime Bucket");
         add(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get(), "Slime Feeder");
         add("item_group.resourcefulslimes.tab", "Resourceful Slimes");
+        add("container.slimeFeeder", "Slime Feeder");
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
             if(variant.isModded()) {
                 add(variant.getDropItem(), capitalizeAll(variant.getDropItem().toString().replaceFirst(ResourcefulSlimes.MOD_ID + ":", "")));
