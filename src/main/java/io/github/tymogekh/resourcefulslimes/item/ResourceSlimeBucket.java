@@ -2,21 +2,24 @@ package io.github.tymogekh.resourcefulslimes.item;
 
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.MobBucketItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 
 public class ResourceSlimeBucket extends MobBucketItem {
@@ -45,6 +48,17 @@ public class ResourceSlimeBucket extends MobBucketItem {
         if(slime != null) {
             slime.loadFromBucketTag(customdata.copyTag());
             slime.setFromBucket(true);
+        }
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+        CustomData customData = stack.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY);
+        CompoundTag tag = customData.copyTag();
+        if(tag.contains("Variant")){
+            ResourceSlime.Variant variant = ResourceSlime.Variant.byId(tag.getByte("Variant"));
+            ChatFormatting[] formatting = new ChatFormatting[]{ChatFormatting.GRAY};
+            tooltipComponents.add(((MutableComponent) variant.getDisplayName()).withStyle(formatting));
         }
     }
 }

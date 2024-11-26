@@ -11,11 +11,20 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "minecraft:custom_name"
+              ],
+              "source": "block_entity"
+            }
+          ],
           "name": "resourcefulslimes:slime_feeder"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "resourcefulslimes:block/slime_feeder"
+  "random_sequence": "resourcefulslimes:blocks/slime_feeder"
 }

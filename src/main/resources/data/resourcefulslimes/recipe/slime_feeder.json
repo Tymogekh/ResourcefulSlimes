@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "X": {
+      "tag": "minecraft:planks"
+    },
+    "Y": {
+      "item": "minecraft:iron_ingot"
+    },
+    "Z": {
+      "tag": "c:cobblestones"
+    }
+  },
+  "pattern": [
+    "XXX",
+    "Y Y",
+    "ZZZ"
+  ],
+  "result": {
+    "count": 1,
+    "id": "resourcefulslimes:slime_feeder"
+  }
+}

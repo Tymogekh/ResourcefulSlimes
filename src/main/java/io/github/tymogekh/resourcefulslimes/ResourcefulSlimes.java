@@ -3,7 +3,7 @@ package io.github.tymogekh.resourcefulslimes;
 import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.blockentity.menu.SlimeFeederMenu;
-import io.github.tymogekh.resourcefulslimes.blockentity.screen.SlimeFeederMenuScreen;
+import io.github.tymogekh.resourcefulslimes.blockentity.screen.SlimeFeederScreen;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import io.github.tymogekh.resourcefulslimes.datagen.*;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
@@ -34,6 +34,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -69,9 +71,7 @@ public class ResourcefulSlimes {
     public static final DeferredHolder<Item, DeferredSpawnEggItem> RANDOM_RESOURCE_SLIME_SPAWN_EGG = ITEMS.register("random_resource_slime_spawn_egg",
             () -> new DeferredSpawnEggItem(RESOURCE_SLIME, 0xffffff, 0xffffff, new Item.Properties()));
 
-    public static final DeferredHolder<Item, ResourceSlimeBucket> RESOURCE_SLIME_BUCKET = ITEMS.register("resource_slime_bucket", ResourceSlimeBucket::new);
-
-    public static final DeferredHolder<Block, SlimeFeederBlock> SLIME_FEEDER_BLOCK = BLOCKS.register("slime_feeder", () -> new SlimeFeederBlock(BlockBehaviour.Properties.of().sound(SoundType.STONE).strength(0.6F).explosionResistance(0.6F)));
+    public static final DeferredHolder<Block, SlimeFeederBlock> SLIME_FEEDER_BLOCK = BLOCKS.register("slime_feeder", () -> new SlimeFeederBlock(BlockBehaviour.Properties.of().sound(SoundType.STONE).strength(1.2F).explosionResistance(0.6F)));
     public static final DeferredHolder<Item, BlockItem> SLIME_FEEDER_ITEM = ITEMS.register("slime_feeder", () -> new BlockItem(SLIME_FEEDER_BLOCK.get(), new Item.Properties()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SlimeFeederBlockEntity>> SLIME_FEEDER_ENTITY = BLOCK_ENTITY_TYPES.register("slime_feeder",
             () -> BlockEntityType.Builder.of(SlimeFeederBlockEntity::new, SLIME_FEEDER_BLOCK.get()).build(null));
@@ -86,6 +86,8 @@ public class ResourcefulSlimes {
     public static final DeferredHolder<Item, Item> LEAD_INGOT = ITEMS.register("lead_ingot", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SILVER_INGOT = ITEMS.register("silver_ingot", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> CERTUS_QUARTZ = ITEMS.register("certus_quartz", () -> new Item(new Item.Properties()));
+
+    public static final DeferredHolder<Item, ResourceSlimeBucket> RESOURCE_SLIME_BUCKET = ITEMS.register("resource_slime_bucket", ResourceSlimeBucket::new);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_TAB = CREATIVE_TABS.register("tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("item_group." + MOD_ID + ".tab"))
@@ -104,10 +106,10 @@ public class ResourcefulSlimes {
     public ResourcefulSlimes(IEventBus bus, ModContainer container){
         container.registerConfig(ModConfig.Type.COMMON, Config.SPEC, MOD_ID + "-common.toml");
         BLOCKS.register(bus);
-        ITEMS.register(bus);
         MENUS.register(bus);
         BLOCK_ENTITY_TYPES.register(bus);
         ENTITY_TYPES.register(bus);
+        ITEMS.register(bus);
         CREATIVE_TABS.register(bus);
         bus.addListener(this::registerScreens);
         bus.addListener(this::gatherData);
@@ -115,10 +117,11 @@ public class ResourcefulSlimes {
         bus.addListener(this::entityAttributes);
         bus.addListener(this::registerSpawnRules);
         bus.addListener(this::layerDefinition);
+        bus.addListener(this::registerCapabilities);
     }
 
     private void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(SLIME_FEEDER_MENU.get(), SlimeFeederMenuScreen::new);
+        event.register(SLIME_FEEDER_MENU.get(), SlimeFeederScreen::new);
     }
 
 
@@ -145,11 +148,15 @@ public class ResourcefulSlimes {
         }
     }
 
-    public void layerDefinition(EntityRenderersEvent.RegisterRenderers event) {
+    private void layerDefinition(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(RESOURCE_SLIME.get(), ResourceSlimeRenderer::new);
     }
 
-    public void entityAttributes(EntityAttributeCreationEvent event){
+    private void entityAttributes(EntityAttributeCreationEvent event){
         event.put(RESOURCE_SLIME.get(), Monster.createMonsterAttributes().build());
+    }
+
+    private void registerCapabilities(RegisterCapabilitiesEvent event){
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, SLIME_FEEDER_ENTITY.get(), (blockEntity, side) -> blockEntity.getHandler());
     }
 }

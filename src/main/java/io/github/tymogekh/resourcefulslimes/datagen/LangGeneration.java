@@ -24,6 +24,8 @@ public class LangGeneration extends LanguageProvider {
         add("item_group.resourcefulslimes.tab", "Resourceful Slimes");
         add("container.slimeFeeder", "Slime Feeder");
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
+            String displayName = variant.getDisplayName().getString();
+            add(variant.getDisplayName().getString(), "Variant: " + capitalizeAll(displayName.replaceFirst("entity.resourcefulslimes.resource_slime.variant.", "")));
             if(variant.isModded()) {
                 add(variant.getDropItem(), capitalizeAll(variant.getDropItem().toString().replaceFirst(ResourcefulSlimes.MOD_ID + ":", "")));
             }
