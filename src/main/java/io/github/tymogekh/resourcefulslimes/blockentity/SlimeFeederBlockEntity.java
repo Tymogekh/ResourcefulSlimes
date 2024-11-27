@@ -2,12 +2,13 @@ package io.github.tymogekh.resourcefulslimes.blockentity;
 
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
-import io.github.tymogekh.resourcefulslimes.blockentity.menu.SlimeFeederMenu;
+import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederMenu;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.StackHandlerModified;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -99,7 +100,7 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
         boolean flag = nutrition == 0;
         ItemStack stack = slimeFeeder.items.getFirst();
         if(!stack.isEmpty() && nutrition < Config.MAX_NUTRITION_STORAGE.get()){
-            int foodNutrition = Objects.requireNonNull(stack.getFoodProperties(null)).nutrition();
+            int foodNutrition = Objects.requireNonNull(stack.get(DataComponents.FOOD)).nutrition();
             stack.shrink(1);
             if(nutrition + foodNutrition < Config.MAX_NUTRITION_STORAGE.get()){
                 slimeFeeder.nutrition += foodNutrition;

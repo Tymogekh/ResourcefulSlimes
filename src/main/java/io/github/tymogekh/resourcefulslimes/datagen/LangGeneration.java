@@ -21,6 +21,7 @@ public class LangGeneration extends LanguageProvider {
         add(ResourcefulSlimes.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get(), "Random Resource Slime Spawn Egg");
         add(ResourcefulSlimes.RESOURCE_SLIME_BUCKET.get(), "Resource Slime Bucket");
         add(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get(), "Slime Feeder");
+        add(ResourcefulSlimes.SLIME_FEEDER_ITEM.get(), "Slime Feeder");
         add("item_group.resourcefulslimes.tab", "Resourceful Slimes");
         add("container.slimeFeeder", "Slime Feeder");
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){

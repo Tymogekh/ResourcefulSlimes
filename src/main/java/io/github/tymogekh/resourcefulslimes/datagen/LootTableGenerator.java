@@ -5,6 +5,7 @@ import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.advancements.critereon.SlimePredicate;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.flag.FeatureFlags;
@@ -40,7 +41,7 @@ public class LootTableGenerator extends EntityLootSubProvider {
                                         LootItem.lootTableItem(Items.SLIME_BALL)
                                                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(-2.0F, 1.0F)))
                                                 .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))
-                                                .when(this.killedByFrog().invert())
+                                                .when(this.killedByFrog(this.registries.lookupOrThrow(Registries.ENTITY_TYPE)).invert())
                                                 .when(
                                                         LootItemEntityPropertyCondition.hasProperties(
                                                                 LootContext.EntityTarget.THIS,

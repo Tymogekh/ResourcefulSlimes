@@ -7,7 +7,6 @@ import io.github.tymogekh.resourcefulslimes.config.Config;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -19,6 +18,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
@@ -41,6 +41,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.scores.PlayerTeam;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +52,6 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntFunction;
-import java.util.function.Predicate;
 
 public class ResourceSlime extends Slime implements Bucketable, VariantHolder<ResourceSlime.Variant> {
     private static final EntityDataAccessor<Byte> RESOURCE = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
@@ -92,7 +92,14 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.targetSelector.removeAllGoals(Predicate.isEqual(null));
+        for (Goal goal : this.targetSelector.getAvailableGoals()){
+            this.targetSelector.removeGoal(goal);
+        }
+        for (Goal goal : this.goalSelector.getAvailableGoals()){
+            if (goal instanceof SlimeAttackGoal){
+                this.goalSelector.removeGoal(goal);
+            }
+        }
         this.goalSelector.addGoal(3, new ResourceSlimeFeederGoal());
     }
 
@@ -112,7 +119,9 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         } else if(this.saturation >= Config.FOOD_CONSUMPTION.get() && this.random.nextInt(Config.ITEM_DROP_CHANCE_DECREASE.get()) == 0){
             this.saturation -= Config.FOOD_CONSUMPTION.get();
             this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 1.5F);
-            this.spawnAtLocation(this.getVariant().getDropItem());
+            if(!this.level().isClientSide()) {
+                this.spawnAtLocation((ServerLevel) this.level(), this.getVariant().getDropItem());
+            }
         }
     }
 
@@ -127,10 +136,10 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     @Override
     protected @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        FoodProperties foodProperties = stack.getFoodProperties(player);
+        FoodProperties foodProperties = stack.get(DataComponents.FOOD);
         if(foodProperties != null && this.saturation < Config.MAX_SATURATION.get()) {
             stack.consume(1, player);
-            this.playSound(SoundEvents.GENERIC_EAT, 1.0F, 1.5F);
+            this.playSound(SoundEvents.GENERIC_EAT.value(), 1.0F, 1.5F);
             if (this.saturation + foodProperties.nutrition() <= Config.MAX_SATURATION.get()) {
                 this.saturation += foodProperties.nutrition();
             } else {
@@ -145,15 +154,15 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     }
 
     @Override
-    public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        if(spawnType.equals(MobSpawnType.SPAWN_EGG)) {
+    public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor p_33601_, @NotNull DifficultyInstance p_33602_, @NotNull EntitySpawnReason p_361992_, @Nullable SpawnGroupData p_33604_) {
+        if(p_361992_.equals(EntitySpawnReason.SPAWN_ITEM_USE)) {
             ArrayList<Variant> presentValues = presentValues();
             this.setVariant(presentValues.get(this.random.nextInt(presentValues.size()-1)));
-        } else if(spawnType.equals(MobSpawnType.BUCKET)){
+        } else if(p_361992_.equals(EntitySpawnReason.BUCKET)){
             this.setSize(1, false);
-            return spawnGroupData;
-        } else if(spawnType.equals(MobSpawnType.NATURAL) || spawnType.equals(MobSpawnType.CHUNK_GENERATION)) {
-            Holder<Biome> holder = level.getBiome(this.blockPosition());
+            return p_33604_;
+        } else if(p_361992_.equals(EntitySpawnReason.NATURAL) || p_361992_.equals(EntitySpawnReason.CHUNK_GENERATION)) {
+            Holder<Biome> holder = p_33601_.getBiome(this.blockPosition());
             ArrayList<Variant> variants = new ArrayList<>();
             for(Variant variant : presentValues()){
                 if(holder.is(variant.getSpawnBiomeTag())){
@@ -161,17 +170,17 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
                 }
             }
             Variant setVariant = spawnTie(variants);
-            spawnGroupData = new ResourceSlimeGroupData(setVariant);
+            p_33604_ = new ResourceSlimeGroupData(setVariant);
             this.setVariant(setVariant);
         }
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+        return super.finalizeSpawn(p_33601_, p_33602_, p_361992_, p_33604_);
     }
 
     public static ArrayList<Variant> presentValues(){
         ArrayList<Variant> list = new ArrayList<>();
         for(Variant variant : ResourceSlime.Variant.values()){
-            Optional<HolderSet.Named<Item>> optional = BuiltInRegistries.ITEM.getTag(variant.getResourceTag());
-            if((optional.isPresent() && optional.get().size() > 1) || !variant.isModded()){
+            Iterable<Holder<Item>> iterable = BuiltInRegistries.ITEM.getTagOrEmpty(variant.getResourceTag());
+            if (iterable.spliterator().getExactSizeIfKnown() > 1 || !variant.isModded()){
                 list.add(variant);
             }
         }
@@ -195,40 +204,34 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         int i = this.getSize();
         Variant variant = this.getVariant();
         if (!this.level().isClientSide && i > 1 && this.isDeadOrDying()) {
-            Component component = this.getCustomName();
-            boolean flag = this.isNoAi();
             float f = this.getDimensions(this.getPose()).width();
             float f1 = f / 2.0F;
             int j = i / 2;
             int k = 2 + this.random.nextInt(3);
+            PlayerTeam playerteam = this.getTeam();
             ArrayList<Mob> children = new ArrayList<>();
+            this.preventConversionSpawns = true;
 
             for(int l = 0; l < k; ++l) {
                 float f2 = ((float)(l % 2) - 0.5F) * f1;
                 float f3 = ((float)(l / 2) - 0.5F) * f1;
-                ResourceSlime slime = (ResourceSlime) this.getType().create(this.level());
-                if (slime != null) {
-                    if (this.isPersistenceRequired()) {
-                        slime.setPersistenceRequired();
-                    }
-                    slime.setCustomName(component);
-                    slime.setNoAi(flag);
-                    slime.setInvulnerable(this.isInvulnerable());
-                    slime.setSize(j, true);
-                    slime.setVariant(variant);
-                    slime.moveTo(this.getX() + (double)f2, this.getY() + 0.5, this.getZ() + (double)f3, this.random.nextFloat() * 360.0F, 0.0F);
-                    children.add(slime);
-                }
+                ResourceSlime slime = this.convertTo(ResourcefulSlimes.RESOURCE_SLIME.get(), new ConversionParams(ConversionType.SPLIT_ON_DEATH, false, false, playerteam), EntitySpawnReason.TRIGGERED, (p_381514_) -> {
+                    p_381514_.setSize(j, true);
+                    p_381514_.setVariant(variant);
+                    p_381514_.moveTo(this.getX() + (double)f2, this.getY() + 0.5, this.getZ() + (double)f3, this.random.nextFloat() * 360.0F, 0.0F);
+                });
+                children.add(slime);
             }
 
+            this.preventConversionSpawns = false;
             if (!EventHooks.onMobSplit(this, children).isCanceled()) {
                 Level var10001 = this.level();
                 Objects.requireNonNull(var10001);
                 children.forEach(var10001::addFreshEntity);
             }
         }
-        if (reason == RemovalReason.KILLED || reason == RemovalReason.DISCARDED) {
-            this.triggerOnDeathMobEffects(reason);
+        if ((reason == RemovalReason.KILLED || reason == RemovalReason.DISCARDED) && !this.level().isClientSide()) {
+            this.triggerOnDeathMobEffects((ServerLevel) this.level(), reason);
         }
         this.setRemoved(reason);
         this.brain.clearMemories();
@@ -454,7 +457,7 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
                         SlimeFeederBlock.changeBlockState(ResourceSlime.this.level(), this.feeder.getBlockState(), this.feeder.getBlockPos(), false);
                         Objects.requireNonNull(this.feeder.getLevel()).invalidateCapabilities(this.feeder.getBlockPos());
                     }
-                    ResourceSlime.this.playSound(SoundEvents.GENERIC_EAT, 1.0F, 1.5F);
+                    ResourceSlime.this.playSound(SoundEvents.GENERIC_EAT.value(), 1.0F, 1.5F);
                     this.feeder.setChanged();
                     Objects.requireNonNull(this.feeder.getLevel()).sendBlockUpdated(this.feeder.getBlockPos(), this.feeder.getBlockState(), this.feeder.getBlockState(), 0);
                 }

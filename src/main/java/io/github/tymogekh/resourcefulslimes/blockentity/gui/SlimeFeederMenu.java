@@ -1,8 +1,9 @@
-package io.github.tymogekh.resourcefulslimes.blockentity.menu;
+package io.github.tymogekh.resourcefulslimes.blockentity.gui;
 
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.SlimeFeederSlot;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -44,7 +45,7 @@ public class SlimeFeederMenu extends AbstractContainerMenu {
         if(slot.hasItem()){
             stack = stack1;
             if(i != 0){
-                if(stack1.getFoodProperties(player) == null || !this.moveItemStackTo(stack, 0, 1, false)){
+                if(stack1.get(DataComponents.FOOD) == null || !this.moveItemStackTo(stack, 0, 1, false)){
                     return ItemStack.EMPTY;
                 }
             } else {
