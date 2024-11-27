@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "#c:is_wet_nether",
+  "biomes": "#c:is_wet/nether",
   "spawners": [
     {
       "type": "resourcefulslimes:resource_slime",
