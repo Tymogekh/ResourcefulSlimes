@@ -91,16 +91,10 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
 
     @Override
     protected void registerGoals() {
-        super.registerGoals();
-        for (Goal goal : this.targetSelector.getAvailableGoals()){
-            this.targetSelector.removeGoal(goal);
-        }
-        for (Goal goal : this.goalSelector.getAvailableGoals()){
-            if (goal instanceof SlimeAttackGoal){
-                this.goalSelector.removeGoal(goal);
-            }
-        }
-        this.goalSelector.addGoal(3, new ResourceSlimeFeederGoal());
+        this.goalSelector.addGoal(1, new Slime.SlimeFloatGoal(this));
+        this.goalSelector.addGoal(2, new ResourceSlimeFeederGoal(this));
+        this.goalSelector.addGoal(3, new Slime.SlimeRandomDirectionGoal(this));
+        this.goalSelector.addGoal(5, new Slime.SlimeKeepOnJumpingGoal(this));
     }
 
     public void setVariant(Variant variant){
@@ -404,25 +398,28 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         private int giveUpTimer;
         private BlockPos nearestFeederPos;
         private SlimeFeederBlockEntity feeder;
+        private final ResourceSlime slime;
 
-        public ResourceSlimeFeederGoal(){
+        public ResourceSlimeFeederGoal(ResourceSlime slime){
             super();
             this.setFlags(EnumSet.of(Flag.LOOK));
+            this.slime = slime;
         }
 
         @Override
         public boolean canUse() {
-            Optional<BlockPos> optional = findNearestFeeder(ResourceSlime.this.blockPosition(), ResourceSlime.this.level());
+            Optional<BlockPos> optional = findNearestFeeder(this.slime.blockPosition(), ResourceSlime.this.level());
             if(optional.isPresent()) {
-                SlimeFeederBlockEntity slimeFeeder = (SlimeFeederBlockEntity) ResourceSlime.this.level().getBlockEntity(optional.get());
-                return ResourceSlime.this.saturation <= Config.MAX_SATURATION.get() / 2 && slimeFeeder != null && slimeFeeder.getNutrition() > 0;
+                this.nearestFeederPos = optional.get();
+                this.feeder = (SlimeFeederBlockEntity) this.slime.level().getBlockEntity(this.nearestFeederPos);
+                return this.slime.saturation <= Config.MAX_SATURATION.get() && this.feeder != null && this.feeder.getNutrition() > 0;
             }
             return false;
         }
 
         @Override
         public boolean canContinueToUse() {
-            return ResourceSlime.this.saturation <= Config.MAX_SATURATION.get()/2 && this.giveUpTimer > 0 && this.feeder != null && this.feeder.getNutrition() > 0;
+            return this.slime.saturation <= Config.MAX_SATURATION.get() && this.giveUpTimer > 0 && this.feeder != null && this.feeder.getNutrition() > 0;
         }
 
         @Override
@@ -433,10 +430,6 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         @Override
         public void start() {
             this.giveUpTimer = Config.GIVE_UP_TIMER.get();
-            findNearestFeeder(ResourceSlime.this.blockPosition(), ResourceSlime.this.level()).ifPresent(pos -> {
-                this.nearestFeederPos = pos;
-                this.feeder = (SlimeFeederBlockEntity) ResourceSlime.this.level().getBlockEntity(this.nearestFeederPos);
-            });
             super.start();
         }
 
@@ -444,20 +437,20 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         public void tick() {
             --this.giveUpTimer;
             if(this.nearestFeederPos != null && this.feeder != null && this.feeder.getNutrition() > 0) {
-                ResourceSlime.this.lookAt(EntityAnchorArgument.Anchor.FEET, this.nearestFeederPos.getBottomCenter());
-                ((SlimeMoveControl) ResourceSlime.this.moveControl).setDirection(ResourceSlime.this.getYRot(), ResourceSlime.this.isDealsDamage());
-                if (this.feeder != null && ResourceSlime.this.blockPosition().closerThan(this.nearestFeederPos, 2)) {
-                    int slimeHunger = Config.MAX_SATURATION.get() - ResourceSlime.this.saturation;
+                this.slime.lookAt(EntityAnchorArgument.Anchor.FEET, this.nearestFeederPos.getBottomCenter());
+                ((Slime.SlimeMoveControl) this.slime.moveControl).setDirection(this.slime.getYRot(), this.slime.isDealsDamage());
+                if (this.feeder != null && this.slime.blockPosition().closerThan(this.nearestFeederPos, 2)) {
+                    int slimeHunger = Config.MAX_SATURATION.get() - this.slime.saturation;
                     if (this.feeder.getNutrition() - slimeHunger > 0) {
-                        ResourceSlime.this.saturation += slimeHunger;
+                        this.slime.saturation += slimeHunger;
                         this.feeder.shrinkNutrition(slimeHunger);
                     } else {
-                        ResourceSlime.this.saturation += this.feeder.getNutrition();
+                        this.slime.saturation += this.feeder.getNutrition();
                         this.feeder.setNutrition(0);
-                        SlimeFeederBlock.changeBlockState(ResourceSlime.this.level(), this.feeder.getBlockState(), this.feeder.getBlockPos(), false);
+                        SlimeFeederBlock.changeBlockState(this.slime.level(), this.feeder.getBlockState(), this.feeder.getBlockPos(), false);
                         Objects.requireNonNull(this.feeder.getLevel()).invalidateCapabilities(this.feeder.getBlockPos());
                     }
-                    ResourceSlime.this.playSound(SoundEvents.GENERIC_EAT.value(), 1.0F, 1.5F);
+                    this.slime.playSound(SoundEvents.GENERIC_EAT.value(), 1.0F, 1.5F);
                     this.feeder.setChanged();
                     Objects.requireNonNull(this.feeder.getLevel()).sendBlockUpdated(this.feeder.getBlockPos(), this.feeder.getBlockState(), this.feeder.getBlockState(), 0);
                 }
