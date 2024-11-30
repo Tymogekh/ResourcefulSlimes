@@ -151,7 +151,7 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor p_33601_, @NotNull DifficultyInstance p_33602_, @NotNull EntitySpawnReason p_361992_, @Nullable SpawnGroupData p_33604_) {
         if(p_361992_.equals(EntitySpawnReason.SPAWN_ITEM_USE)) {
             ArrayList<Variant> presentValues = presentValues();
-            this.setVariant(presentValues.get(this.random.nextInt(presentValues.size()-1)));
+            this.setVariant(presentValues.get(this.random.nextInt(presentValues.size())));
         } else if(p_361992_.equals(EntitySpawnReason.BUCKET)){
             this.setSize(1, false);
             return p_33604_;
