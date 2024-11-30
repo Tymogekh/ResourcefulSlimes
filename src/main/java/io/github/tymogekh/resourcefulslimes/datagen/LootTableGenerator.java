@@ -41,7 +41,7 @@ public class LootTableGenerator extends EntityLootSubProvider {
                                         LootItem.lootTableItem(Items.SLIME_BALL)
                                                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(-2.0F, 1.0F)))
                                                 .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))
-                                                .when(this.killedByFrog(this.registries.lookupOrThrow(Registries.ENTITY_TYPE)).invert())
+                                                .when(this.killedByFrog().invert())
                                                 .when(
                                                         LootItemEntityPropertyCondition.hasProperties(
                                                                 LootContext.EntityTarget.THIS,

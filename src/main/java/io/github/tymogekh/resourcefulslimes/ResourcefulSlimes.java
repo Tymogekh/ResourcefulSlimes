@@ -15,9 +15,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -26,7 +24,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -42,6 +39,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -68,28 +66,28 @@ public class ResourcefulSlimes {
 
     public static final DeferredHolder<EntityType<?>, EntityType<ResourceSlime>> RESOURCE_SLIME = ENTITY_TYPES.register("resource_slime",
             () -> EntityType.Builder.of(ResourceSlime::new, MobCategory.CREATURE).sized(0.52F, 0.52F).eyeHeight(0.325F)
-                    .spawnDimensionsScale(4.0F).clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "resource_slime"))));
+                    .spawnDimensionsScale(4.0F).clientTrackingRange(10).build(MOD_ID + ":resource_slime"));
 
-    public static final DeferredHolder<Item, SpawnEggItem> RANDOM_RESOURCE_SLIME_SPAWN_EGG = ITEMS.register("random_resource_slime_spawn_egg",
-            () -> new SpawnEggItem(RESOURCE_SLIME.get(), 0xffffff, 0xffffff,
-                    new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "random_resource_slime_spawn_egg")))));
+    public static final DeferredHolder<Item, DeferredSpawnEggItem> RANDOM_RESOURCE_SLIME_SPAWN_EGG = ITEMS.register("random_resource_slime_spawn_egg",
+            () -> new DeferredSpawnEggItem(RESOURCE_SLIME, 0xffffff, 0xffffff,
+                    new Item.Properties()));
 
     public static final DeferredHolder<Block, SlimeFeederBlock> SLIME_FEEDER_BLOCK = BLOCKS.register("slime_feeder", () -> new SlimeFeederBlock(
-            BlockBehaviour.Properties.of().sound(SoundType.STONE).strength(1.2F).explosionResistance(0.6F).setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "slime_feeder")))));
+            BlockBehaviour.Properties.of().sound(SoundType.STONE).strength(1.2F).explosionResistance(0.6F)));
     public static final DeferredHolder<Item, BlockItem> SLIME_FEEDER_ITEM = ITEMS.register("slime_feeder", () -> new BlockItem(SLIME_FEEDER_BLOCK.get(),
-            new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "slime_feeder")))));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SlimeFeederBlockEntity>> SLIME_FEEDER_ENTITY = BLOCK_ENTITY_TYPES.register("slime_feeder", () -> new BlockEntityType<>(SlimeFeederBlockEntity::new, SLIME_FEEDER_BLOCK.get()));
+            new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SlimeFeederBlockEntity>> SLIME_FEEDER_ENTITY = BLOCK_ENTITY_TYPES.register("slime_feeder", () -> BlockEntityType.Builder.of(SlimeFeederBlockEntity::new, SLIME_FEEDER_BLOCK.get()).build(null));
     public static final DeferredHolder<MenuType<?>, MenuType<SlimeFeederMenu>> SLIME_FEEDER_MENU = MENUS.register("slime_feeder", () -> IMenuTypeExtension.create(SlimeFeederMenu::new));
 
-    public static final DeferredHolder<Item, Item> TIN_INGOT = ITEMS.register("tin_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "tin_ingot")))));
-    public static final DeferredHolder<Item, Item> ALUMINIUM_INGOT = ITEMS.register("aluminium_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "aluminium_ingot")))));
-    public static final DeferredHolder<Item, Item> URANIUM_INGOT = ITEMS.register("uranium_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "uranium_ingot")))));
-    public static final DeferredHolder<Item, Item> ZINC_INGOT = ITEMS.register("zinc_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "zinc_ingot")))));
-    public static final DeferredHolder<Item, Item> NICKEL_INGOT = ITEMS.register("nickel_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "nickel_ingot")))));
-    public static final DeferredHolder<Item, Item> OSMIUM_INGOT = ITEMS.register("osmium_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "osmium_ingot")))));
-    public static final DeferredHolder<Item, Item> LEAD_INGOT = ITEMS.register("lead_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "lead_ingot")))));
-    public static final DeferredHolder<Item, Item> SILVER_INGOT = ITEMS.register("silver_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "silver_ingot")))));
-    public static final DeferredHolder<Item, Item> CERTUS_QUARTZ = ITEMS.register("certus_quartz", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "certus_quartz")))));
+    public static final DeferredHolder<Item, Item> TIN_INGOT = ITEMS.register("tin_ingot", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> ALUMINIUM_INGOT = ITEMS.register("aluminium_ingot", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> URANIUM_INGOT = ITEMS.register("uranium_ingot", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> ZINC_INGOT = ITEMS.register("zinc_ingot", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> NICKEL_INGOT = ITEMS.register("nickel_ingot", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> OSMIUM_INGOT = ITEMS.register("osmium_ingot", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> LEAD_INGOT = ITEMS.register("lead_ingot", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SILVER_INGOT = ITEMS.register("silver_ingot", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> CERTUS_QUARTZ = ITEMS.register("certus_quartz", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, ResourceSlimeBucket> RESOURCE_SLIME_BUCKET = ITEMS.register("resource_slime_bucket", ResourceSlimeBucket::new);
 
@@ -147,7 +145,7 @@ public class ResourcefulSlimes {
     private void registerItemColors(RegisterColorHandlersEvent.Item event) {
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()) {
             if(variant.isModded()) {
-                event.register((var1, var2) -> ARGB.opaque(variant.getColor()), variant.getDropItem());
+                event.register((var1, var2) -> FastColor.ARGB32.opaque(variant.getColor()), variant.getDropItem());
             }
         }
     }

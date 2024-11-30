@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "X": "#minecraft:planks",
-    "Y": "minecraft:iron_ingot",
-    "Z": "#c:cobblestones"
+    "X": {
+      "tag": "minecraft:block/planks"
+    },
+    "Y": {
+      "item": "minecraft:iron_ingot"
+    },
+    "Z": {
+      "tag": "c:cobblestones"
+    }
   },
   "pattern": [
     "XXX",
