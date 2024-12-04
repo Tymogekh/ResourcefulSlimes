@@ -9,11 +9,13 @@ import io.github.tymogekh.resourcefulslimes.datagen.*;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.entity.renderer.ResourceSlimeRenderer;
 import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EntityType;
@@ -50,6 +52,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 @Mod(ResourcefulSlimes.MOD_ID)
@@ -69,7 +72,7 @@ public class ResourcefulSlimes {
                     .spawnDimensionsScale(4.0F).clientTrackingRange(10).build(MOD_ID + ":resource_slime"));
 
     public static final DeferredHolder<Item, DeferredSpawnEggItem> RANDOM_RESOURCE_SLIME_SPAWN_EGG = ITEMS.register("random_resource_slime_spawn_egg",
-            () -> new DeferredSpawnEggItem(RESOURCE_SLIME, 0xffffff, 0xffffff,
+            () -> new DeferredSpawnEggItem(RESOURCE_SLIME, -1, -1,
                     new Item.Properties()));
 
     public static final DeferredHolder<Block, SlimeFeederBlock> SLIME_FEEDER_BLOCK = BLOCKS.register("slime_feeder", () -> new SlimeFeederBlock(
@@ -143,6 +146,16 @@ public class ResourcefulSlimes {
     }
 
     private void registerItemColors(RegisterColorHandlersEvent.Item event) {
+        event.register((itemStack, i) -> {
+            if(i == 1) {
+                CompoundTag tag = Objects.requireNonNull(itemStack.get(DataComponents.BUCKET_ENTITY_DATA)).copyTag();
+                if(tag.contains("Variant")) {
+                    return FastColor.ARGB32.opaque(ResourceSlime.Variant.byId(tag.getByte("Variant")).getColor());
+                }
+                return FastColor.ARGB32.opaque(ResourceSlime.Variant.IRON.getColor());
+            }
+            return -1;
+            }, RESOURCE_SLIME_BUCKET.get());
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()) {
             if(variant.isModded()) {
                 event.register((var1, var2) -> FastColor.ARGB32.opaque(variant.getColor()), variant.getDropItem());
