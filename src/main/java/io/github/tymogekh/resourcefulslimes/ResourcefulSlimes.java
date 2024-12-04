@@ -9,11 +9,13 @@ import io.github.tymogekh.resourcefulslimes.datagen.*;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.entity.renderer.ResourceSlimeRenderer;
 import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -52,6 +54,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 @Mod(ResourcefulSlimes.MOD_ID)
@@ -71,7 +74,7 @@ public class ResourcefulSlimes {
                     .spawnDimensionsScale(4.0F).clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "resource_slime"))));
 
     public static final DeferredHolder<Item, SpawnEggItem> RANDOM_RESOURCE_SLIME_SPAWN_EGG = ITEMS.register("random_resource_slime_spawn_egg",
-            () -> new SpawnEggItem(RESOURCE_SLIME.get(), 0xffffff, 0xffffff,
+            () -> new SpawnEggItem(RESOURCE_SLIME.get(), -1, -1,
                     new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "random_resource_slime_spawn_egg")))));
 
     public static final DeferredHolder<Block, SlimeFeederBlock> SLIME_FEEDER_BLOCK = BLOCKS.register("slime_feeder", () -> new SlimeFeederBlock(
@@ -145,6 +148,16 @@ public class ResourcefulSlimes {
     }
 
     private void registerItemColors(RegisterColorHandlersEvent.Item event) {
+        event.register((itemStack, i) -> {
+            if(i == 1) {
+                CompoundTag tag = Objects.requireNonNull(itemStack.get(DataComponents.BUCKET_ENTITY_DATA)).copyTag();
+                if(tag.contains("Variant")){
+                    return ARGB.opaque(ResourceSlime.Variant.byId(tag.getByte("Variant")).getColor());
+                }
+                return ARGB.opaque(ResourceSlime.Variant.IRON.getColor());
+            }
+            return -1;
+        }, RESOURCE_SLIME_BUCKET.get());
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()) {
             if(variant.isModded()) {
                 event.register((var1, var2) -> ARGB.opaque(variant.getColor()), variant.getDropItem());

@@ -14,15 +14,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 
 public class ResourceSlimeBucket extends MobBucketItem {
@@ -37,13 +40,13 @@ public class ResourceSlimeBucket extends MobBucketItem {
         if(!context.getLevel().isClientSide()) {
             Player player = context.getPlayer();
             this.spawn((ServerLevel) context.getLevel(), context.getItemInHand(), context.getClickedPos());
-            if(player != null && !player.isCreative()) {
+            if(player != null) {
                 context.getItemInHand().shrink(1);
                 player.addItem(new ItemStack(Items.BUCKET));
+                player.swing(context.getHand());
             }
-            return InteractionResult.SUCCESS;
         }
-        return super.useOn(context);
+        return InteractionResult.SUCCESS;
     }
 
     private void spawn(ServerLevel serverLevel, ItemStack bucketedMobStack, BlockPos pos) {

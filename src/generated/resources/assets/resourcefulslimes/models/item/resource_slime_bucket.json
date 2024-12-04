@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "resourcefulslimes:item/resource_slime_bucket"
+    "layer0": "minecraft:item/bucket",
+    "layer1": "resourcefulslimes:item/resource_slime_bucket"
   }
 }
