@@ -37,9 +37,8 @@ public class ResourceSlimeBucket extends MobBucketItem {
                 context.getItemInHand().shrink(1);
                 player.addItem(new ItemStack(Items.BUCKET));
             }
-            return InteractionResult.SUCCESS;
         }
-        return super.useOn(context);
+        return InteractionResult.SUCCESS;
     }
 
     private void spawn(ServerLevel serverLevel, ItemStack bucketedMobStack, BlockPos pos) {
