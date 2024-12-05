@@ -99,7 +99,7 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
         int nutrition = slimeFeeder.nutrition;
         boolean flag = nutrition == 0;
         ItemStack stack = slimeFeeder.items.getFirst();
-        if(!stack.isEmpty() && nutrition < Config.MAX_NUTRITION_STORAGE.get()){
+        if(!stack.isEmpty() && nutrition < Config.MAX_NUTRITION_STORAGE.get() && stack.get(DataComponents.FOOD) != null){
             int foodNutrition = Objects.requireNonNull(stack.get(DataComponents.FOOD)).nutrition();
             stack.shrink(1);
             if(nutrition + foodNutrition < Config.MAX_NUTRITION_STORAGE.get()){

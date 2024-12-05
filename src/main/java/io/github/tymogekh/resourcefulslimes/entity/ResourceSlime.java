@@ -159,9 +159,13 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
                     variants.add(variant);
                 }
             }
-            Variant setVariant = spawnTie(variants);
-            spawnGroupData = new ResourceSlimeGroupData(setVariant);
-            this.setVariant(setVariant);
+            if(!variants.isEmpty()) {
+                Variant setVariant = spawnTie(variants);
+                spawnGroupData = new ResourceSlimeGroupData(setVariant);
+                this.setVariant(setVariant);
+            } else {
+                this.remove(RemovalReason.DISCARDED);
+            }
         }
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
@@ -177,7 +181,7 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         return list;
     }
 
-    private static Variant spawnTie(ArrayList<Variant> variants){
+    private static Variant spawnTie(ArrayList<Variant> variants) {
         Variant variant1 = variants.getFirst();
         Variant variant2 = variants.getLast();
         if(variant2.equals(variant1)){
