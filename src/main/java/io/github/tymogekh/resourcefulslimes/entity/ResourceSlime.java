@@ -163,9 +163,13 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
                     variants.add(variant);
                 }
             }
-            Variant setVariant = spawnTie(variants);
-            p_33604_ = new ResourceSlimeGroupData(setVariant);
-            this.setVariant(setVariant);
+            if(!variants.isEmpty()) {
+                Variant setVariant = spawnTie(variants);
+                p_33604_ = new ResourceSlimeGroupData(setVariant);
+                this.setVariant(setVariant);
+            } else {
+                this.remove(RemovalReason.DISCARDED);
+            }
         }
         return super.finalizeSpawn(p_33601_, p_33602_, p_361992_, p_33604_);
     }

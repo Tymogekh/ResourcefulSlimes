@@ -1,6 +1,7 @@
 package io.github.tymogekh.resourcefulslimes.blockentity.slot;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ public class StackHandlerModified extends ItemStackHandler {
     }
 
     @Override
-    public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        return stack;
+    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+        return stack.get(DataComponents.FOOD) != null;
     }
 }
