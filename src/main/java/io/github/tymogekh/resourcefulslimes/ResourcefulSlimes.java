@@ -3,27 +3,16 @@ package io.github.tymogekh.resourcefulslimes;
 import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederMenu;
-import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederScreen;
 import io.github.tymogekh.resourcefulslimes.config.Config;
-import io.github.tymogekh.resourcefulslimes.datagen.*;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
-import io.github.tymogekh.resourcefulslimes.entity.renderer.ResourceSlimeRenderer;
 import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
-import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.SpawnPlacementTypes;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -33,28 +22,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 
 @Mod(ResourcefulSlimes.MOD_ID)
@@ -118,62 +92,5 @@ public class ResourcefulSlimes {
         ENTITY_TYPES.register(bus);
         ITEMS.register(bus);
         CREATIVE_TABS.register(bus);
-        bus.addListener(this::registerScreens);
-        bus.addListener(this::gatherData);
-        bus.addListener(this::registerItemColors);
-        bus.addListener(this::entityAttributes);
-        bus.addListener(this::registerSpawnRules);
-        bus.addListener(this::layerDefinition);
-        bus.addListener(this::registerCapabilities);
-    }
-
-    private void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(SLIME_FEEDER_MENU.get(), SlimeFeederScreen::new);
-    }
-
-
-    private void gatherData(GatherDataEvent event) {
-        DataGenerator generator = event.getGenerator();
-        PackOutput output = generator.getPackOutput();
-        ExistingFileHelper fileHelper = event.getExistingFileHelper();
-        generator.addProvider(event.includeClient(), new ItemModelGenerator(output, fileHelper));
-        generator.addProvider(event.includeClient(), new LangGeneration(output, "en_us"));
-        generator.addProvider(event.includeServer(), new ItemTagGeneration(output, event.getLookupProvider(), event.getExistingFileHelper()));
-        generator.addProvider(event.includeServer(), new LootTableProvider(output, Collections.emptySet(),
-                List.of(new LootTableProvider.SubProviderEntry(LootTableGenerator::new, LootContextParamSets.ENTITY)), event.getLookupProvider()));
-    }
-
-    private void registerSpawnRules(RegisterSpawnPlacementsEvent event) {
-        event.register(RESOURCE_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ResourceSlime::checkMobSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
-    }
-
-    private void registerItemColors(RegisterColorHandlersEvent.Item event) {
-        event.register((itemStack, i) -> {
-            if(i == 1) {
-                CompoundTag tag = Objects.requireNonNull(itemStack.get(DataComponents.BUCKET_ENTITY_DATA)).copyTag();
-                if(tag.contains("Variant")){
-                    return ARGB.opaque(ResourceSlime.Variant.byId(tag.getByte("Variant")).getColor());
-                }
-                return ARGB.opaque(ResourceSlime.Variant.IRON.getColor());
-            }
-            return -1;
-        }, RESOURCE_SLIME_BUCKET.get());
-        for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()) {
-            if(variant.isModded()) {
-                event.register((var1, var2) -> ARGB.opaque(variant.getColor()), variant.getDropItem());
-            }
-        }
-    }
-
-    private void layerDefinition(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(RESOURCE_SLIME.get(), ResourceSlimeRenderer::new);
-    }
-
-    private void entityAttributes(EntityAttributeCreationEvent event){
-        event.put(RESOURCE_SLIME.get(), Monster.createMonsterAttributes().build());
-    }
-
-    private void registerCapabilities(RegisterCapabilitiesEvent event){
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, SLIME_FEEDER_ENTITY.get(), (blockEntity, side) -> blockEntity.getHandler());
     }
 }
