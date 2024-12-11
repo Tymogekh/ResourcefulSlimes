@@ -48,7 +48,7 @@ public class ResourcefulSlimes {
                     .spawnDimensionsScale(4.0F).clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "resource_slime"))));
 
     public static final DeferredHolder<Item, SpawnEggItem> RANDOM_RESOURCE_SLIME_SPAWN_EGG = ITEMS.register("random_resource_slime_spawn_egg",
-            () -> new SpawnEggItem(RESOURCE_SLIME.get(), -1, -1,
+            () -> new SpawnEggItem(RESOURCE_SLIME.get(),
                     new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "random_resource_slime_spawn_egg")))));
 
     public static final DeferredHolder<Block, SlimeFeederBlock> SLIME_FEEDER_BLOCK = BLOCKS.register("slime_feeder", () -> new SlimeFeederBlock(

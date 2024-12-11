@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "resourcefulslimes:item/resource_slime_bucket",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -1
+      },
+      {
+        "type": "resourcefulslimes:resource_slime_bucket",
+        "default": 14211288
+      }
+    ]
+  }
+}
