@@ -6,18 +6,19 @@ import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederMenu;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -75,8 +76,14 @@ public class ResourcefulSlimes {
             .icon(() -> RANDOM_RESOURCE_SLIME_SPAWN_EGG.get().getDefaultInstance())
             .displayItems(((itemDisplayParameters, output) -> {
                 output.accept(RANDOM_RESOURCE_SLIME_SPAWN_EGG.get());
-                output.accept(RESOURCE_SLIME_BUCKET.get());
                 output.accept(SLIME_FEEDER_ITEM.get());
+                for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
+                    CompoundTag tag = new CompoundTag();
+                    tag.putByte("Variant", variant.getId());
+                    ItemStack stack = new ItemStack(RESOURCE_SLIME_BUCKET);
+                    stack.applyComponents(DataComponentMap.builder().set(DataComponents.BUCKET_ENTITY_DATA, CustomData.of(tag)).build());
+                    output.accept(stack);
+                }
                 for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
                     if(variant.isModded()) {
                         output.accept(variant.getDropItem());
