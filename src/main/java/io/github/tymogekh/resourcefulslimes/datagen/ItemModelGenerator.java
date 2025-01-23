@@ -16,6 +16,7 @@ public class ItemModelGenerator extends ItemModelProvider {
     @Override
     protected void registerModels() {
         basicItem(ResourcefulSlimes.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get());
+        basicItem(ResourcefulSlimes.SLIMEPEDIA.get());
         withExistingParent(ResourcefulSlimes.RESOURCE_SLIME_BUCKET.getRegisteredName(), mcLoc("item/generated"))
                 .texture("layer0", mcLoc("item/bucket"))
                 .texture("layer1", ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "item/resource_slime_bucket"));

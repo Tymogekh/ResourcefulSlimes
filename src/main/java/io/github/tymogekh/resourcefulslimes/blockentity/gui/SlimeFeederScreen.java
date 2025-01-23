@@ -27,13 +27,13 @@ public class SlimeFeederScreen extends AbstractContainerScreen<SlimeFeederMenu> 
     protected void renderBg(@NotNull GuiGraphics guiGraphics, float v, int i, int i1) {
         renderTransparentBackground(guiGraphics);
         guiGraphics.blit(RenderType::guiTextured, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "textures/gui/slime_feeder.png"), this.leftPos, this.topPos, 0, 0 ,this.imageWidth, this.imageHeight, 256, 256);
-        int scaled = (int) (this.getMenu().getNutrition() / (float) Config.MAX_NUTRITION_STORAGE.get() * 49);
-        guiGraphics.blitSprite(RenderType::guiTextured, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "container/slime_feeder/nutrition"), this.leftPos + 97, this.topPos + 64 - scaled, 18, scaled);
     }
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+        int scaled = (int) (this.getMenu().getNutrition() / (float) Config.MAX_NUTRITION_STORAGE.get() * 49);
+        guiGraphics.blitSprite(RenderType::guiTextured, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "container/slime_feeder/nutrition"), this.leftPos + 97, this.topPos + 64 - scaled, 18, scaled);
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
 

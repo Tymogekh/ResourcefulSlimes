@@ -6,6 +6,7 @@ import io.github.tymogekh.resourcefulslimes.datagen.ItemTagGeneration;
 import io.github.tymogekh.resourcefulslimes.datagen.LangGeneration;
 import io.github.tymogekh.resourcefulslimes.datagen.LootTableGenerator;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
+import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeScreen;
 import io.github.tymogekh.resourcefulslimes.entity.renderer.ResourceSlimeRenderer;
 import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
 import net.minecraft.data.DataGenerator;
@@ -37,6 +38,7 @@ public class Events {
     @SubscribeEvent
     private static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ResourcefulSlimes.SLIME_FEEDER_MENU.get(), SlimeFeederScreen::new);
+        event.register(ResourcefulSlimes.RESOURCE_SLIME_MENU.get(), ResourceSlimeScreen::new);
     }
 
     @SubscribeEvent

@@ -33,7 +33,6 @@ public class ResourceSlimeLayer extends RenderLayer<SlimeRenderState, SlimeModel
             } else {
                 vertexconsumer = multiBufferSource.getBuffer(RenderType.entityTranslucent(ResourceSlimeRenderer.TEXTURE_LOCATION));
             }
-
             this.slimeModel.setupAnim(slimeRenderState);
             this.slimeModel.renderToBuffer(poseStack, vertexconsumer, i, LivingEntityRenderer.getOverlayCoords(slimeRenderState, 0.0F), ARGB.opaque(((ResourceSlimeRenderState) slimeRenderState).color));
         }

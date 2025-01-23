@@ -4,6 +4,7 @@ import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.config.Config;
+import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeMenu;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -27,12 +28,15 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
@@ -53,12 +57,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntFunction;
 
-public class ResourceSlime extends Slime implements Bucketable, VariantHolder<ResourceSlime.Variant> {
-    private static final EntityDataAccessor<Byte> RESOURCE = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Integer> SATURATION = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.INT);
+public class ResourceSlime extends Slime implements Bucketable, VariantHolder<ResourceSlime.Variant>, HasCustomInventoryScreen, MenuProvider {
+    public static final EntityDataAccessor<Byte> RESOURCE = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
+    public static final EntityDataAccessor<Integer> SATURATION = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Byte> GROWTH = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
+    public static final EntityDataAccessor<Byte> SPLITTING = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
+    public static final EntityDataAccessor<Byte> HUNGER_REDUCTION = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
+    public static final EntityDataAccessor<Byte> PRODUCTIVENESS = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
     private ParticleOptions particle;
-    private int saturation = 0;
 
     public ResourceSlime(EntityType<? extends Slime> entityType, Level level) {
         super(entityType, level);
@@ -70,23 +77,35 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         builder.define(RESOURCE, (byte) 0);
         builder.define(SATURATION, 0);
         builder.define(FROM_BUCKET, false);
+        builder.define(GROWTH, (byte) 0);
+        builder.define(SPLITTING, (byte) 0);
+        builder.define(HUNGER_REDUCTION, (byte) 0);
+        builder.define(PRODUCTIVENESS, (byte) 0);
     }
 
 
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putInt("Resource", this.getVariant().getId());
-        compound.putInt("Saturation", this.saturation);
+        compound.putByte("Resource", this.getVariant().getId());
+        compound.putInt("Saturation", this.entityData.get(SATURATION));
         compound.putBoolean("FromBucket", this.fromBucket());
+        compound.putByte("Growth", this.entityData.get(GROWTH));
+        compound.putByte("HungerReduction", this.entityData.get(HUNGER_REDUCTION));
+        compound.putByte("Splitting", this.entityData.get(SPLITTING));
+        compound.putByte("Productiveness", this.entityData.get(PRODUCTIVENESS));
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.saturation = compound.getInt("Saturation");
+        this.entityData.set(SATURATION, compound.getInt("Saturation"));
         this.setVariant(ResourceSlime.Variant.byId(compound.getInt("Resource")));
         this.setFromBucket(compound.getBoolean("FromBucket"));
+        this.entityData.set(GROWTH, compound.getByte("Growth"));
+        this.entityData.set(HUNGER_REDUCTION, compound.getByte("HungerReduction"));
+        this.entityData.set(SPLITTING, compound.getByte("Splitting"));
+        this.entityData.set(PRODUCTIVENESS, compound.getByte("Productiveness"));
     }
 
     @Override
@@ -108,13 +127,16 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     @Override
     public void tick() {
         super.tick();
-        if (this.getSize() < 4 && this.random.nextInt(Config.GROW_CHANCE_DECREASE.get()) == 0){
+        if (this.getSize() < 4 && this.random.nextInt(Config.GROW_CHANCE_DECREASE.get()) <= this.entityData.get(GROWTH)){
             this.setSize(this.getSize()+1, true);
-        } else if(this.saturation >= Config.FOOD_CONSUMPTION.get() && this.random.nextInt(Config.ITEM_DROP_CHANCE_DECREASE.get()) == 0){
-            this.saturation -= Config.FOOD_CONSUMPTION.get();
+        } else if(this.entityData.get(SATURATION) >= Config.FOOD_CONSUMPTION.get() - Config.FOOD_CONSUMPTION.get() / 20 * this.entityData.get(HUNGER_REDUCTION) && this.random.nextInt(Config.ITEM_DROP_CHANCE_DECREASE.get()) == 0){
+            this.entityData.set(SATURATION, this.entityData.get(SATURATION) - (Config.FOOD_CONSUMPTION.get() - Config.FOOD_CONSUMPTION.get() / 20 * this.entityData.get(HUNGER_REDUCTION)));
             this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 1.5F);
             if(!this.level().isClientSide()) {
                 this.spawnAtLocation((ServerLevel) this.level(), this.getVariant().getDropItem());
+                if (this.random.nextInt(Config.ITEM_DROP_CHANCE_DECREASE.get()) <= this.entityData.get(PRODUCTIVENESS)){
+                    this.spawnAtLocation((ServerLevel) this.level(), this.getVariant().getDropItem());
+                }
             }
         }
     }
@@ -131,17 +153,20 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     protected @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         FoodProperties foodProperties = stack.get(DataComponents.FOOD);
-        if(foodProperties != null && this.saturation < Config.MAX_SATURATION.get()) {
+        if(foodProperties != null && this.entityData.get(SATURATION) < Config.MAX_SATURATION.get()) {
             stack.consume(1, player);
             this.playSound(SoundEvents.GENERIC_EAT.value(), 1.0F, 1.5F);
-            if (this.saturation + foodProperties.nutrition() <= Config.MAX_SATURATION.get()) {
-                this.saturation += foodProperties.nutrition();
+            if (this.entityData.get(SATURATION) + foodProperties.nutrition() <= Config.MAX_SATURATION.get()) {
+                this.entityData.set(SATURATION, this.entityData.get(SATURATION) + foodProperties.nutrition());
             } else {
-                this.saturation = Config.MAX_SATURATION.get();
+                this.entityData.set(SATURATION, Config.MAX_SATURATION.get());
             }
             return InteractionResult.SUCCESS;
         } else if(stack.is(Items.BUCKET) && this.getSize() == 1) {
             this.slimePickup(player, hand);
+            return InteractionResult.SUCCESS;
+        } else if (stack.is(ResourcefulSlimes.SLIMEPEDIA)){
+            this.openCustomInventoryScreen(player);
             return InteractionResult.SUCCESS;
         }
         return super.mobInteract(player, hand);
@@ -201,11 +226,15 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     public void remove(@NotNull RemovalReason reason) {
         int i = this.getSize();
         Variant variant = this.getVariant();
+        byte growth = this.entityData.get(GROWTH);
+        byte splitting = this.entityData.get(SPLITTING);
+        byte hunger_reduction = this.entityData.get(HUNGER_REDUCTION);
+        byte productiveness = this.entityData.get(PRODUCTIVENESS);
         if (!this.level().isClientSide && i > 1 && this.isDeadOrDying()) {
             float f = this.getDimensions(this.getPose()).width();
             float f1 = f / 2.0F;
             int j = i / 2;
-            int k = 2 + this.random.nextInt(3);
+            int k = 2 + this.random.nextInt(3 + splitting / 5);
             PlayerTeam playerteam = this.getTeam();
             ArrayList<Mob> children = new ArrayList<>();
             this.preventConversionSpawns = true;
@@ -216,7 +245,36 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
                 ResourceSlime slime = this.convertTo(ResourcefulSlimes.RESOURCE_SLIME.get(), new ConversionParams(ConversionType.SPLIT_ON_DEATH, false, false, playerteam), EntitySpawnReason.TRIGGERED, (p_381514_) -> {
                     p_381514_.setSize(j, true);
                     p_381514_.setVariant(variant);
+                    p_381514_.entityData.set(GROWTH, growth);
+                    p_381514_.entityData.set(HUNGER_REDUCTION, hunger_reduction);
+                    p_381514_.entityData.set(SPLITTING, splitting);
+                    p_381514_.entityData.set(PRODUCTIVENESS, productiveness);
                     p_381514_.moveTo(this.getX() + (double)f2, this.getY() + 0.5, this.getZ() + (double)f3, this.random.nextFloat() * 360.0F, 0.0F);
+                    if (this.random.nextInt(Config.MUTATION_CHANCE_DECREASE.get()) == 0) {
+                        int stat = this.random.nextInt(3);
+                        switch (stat){
+                            case 0:
+                                if (growth < 10){
+                                p_381514_.entityData.set(GROWTH, (byte) (growth + 1));
+                                }
+                                break;
+                            case 1:
+                                if (splitting < 10) {
+                                    p_381514_.entityData.set(SPLITTING, (byte) (splitting + 1));
+                                }
+                                break;
+                            case 2:
+                                if (hunger_reduction < 10) {
+                                    p_381514_.entityData.set(HUNGER_REDUCTION, (byte) (hunger_reduction + 1));
+                                }
+                                break;
+                            case 3:
+                                if (productiveness < 10) {
+                                    p_381514_.entityData.set(PRODUCTIVENESS, (byte) (productiveness + 1));
+                                }
+                                break;
+                        }
+                    }
                 });
                 children.add(slime);
             }
@@ -293,14 +351,22 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     public void saveToBucketTag(@NotNull ItemStack itemStack) {
         CustomData.update(DataComponents.BUCKET_ENTITY_DATA, itemStack, compoundTag -> {
             compoundTag.putByte("Variant", this.getVariant().getId());
-            compoundTag.putInt("Saturation", this.saturation);
+            compoundTag.putInt("Saturation", this.entityData.get(SATURATION));
+            compoundTag.putByte("Growth", this.entityData.get(GROWTH));
+            compoundTag.putByte("HungerReduction", this.entityData.get(HUNGER_REDUCTION));
+            compoundTag.putByte("Splitting", this.entityData.get(SPLITTING));
+            compoundTag.putByte("Productiveness", this.entityData.get(PRODUCTIVENESS));
         });
     }
 
     @Override
     public void loadFromBucketTag(@NotNull CompoundTag compoundTag) {
         this.setVariant(Variant.byId(compoundTag.getByte("Variant")));
-        this.saturation = compoundTag.getInt("Saturation");
+        this.entityData.set(SATURATION, compoundTag.getInt("Saturation"));
+        this.entityData.set(GROWTH, compoundTag.getByte("Growth"));
+        this.entityData.set(HUNGER_REDUCTION, compoundTag.getByte("HungerReduction"));
+        this.entityData.set(SPLITTING, compoundTag.getByte("Splitting"));
+        this.entityData.set(PRODUCTIVENESS, compoundTag.getByte("Productiveness"));
     }
 
     @Override
@@ -311,6 +377,18 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     @Override
     public @NotNull SoundEvent getPickupSound() {
         return SoundEvents.SLIME_JUMP_SMALL;
+    }
+
+    @Override
+    public void openCustomInventoryScreen(@NotNull Player player) {
+        if (!this.level().isClientSide()) {
+            player.openMenu(this, buf -> buf.writeInt(this.getId()));
+        }
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
+        return new ResourceSlimeMenu(ResourcefulSlimes.RESOURCE_SLIME_MENU.get(), i, this);
     }
 
 
@@ -416,14 +494,14 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
             if(optional.isPresent()) {
                 this.nearestFeederPos = optional.get();
                 this.feeder = (SlimeFeederBlockEntity) this.slime.level().getBlockEntity(this.nearestFeederPos);
-                return this.slime.saturation <= Config.MAX_SATURATION.get() && this.feeder != null && this.feeder.getNutrition() > 0;
+                return this.slime.entityData.get(SATURATION) <= Config.MAX_SATURATION.get() && this.feeder != null && this.feeder.getNutrition() > 0;
             }
             return false;
         }
 
         @Override
         public boolean canContinueToUse() {
-            return this.slime.saturation <= Config.MAX_SATURATION.get() && this.giveUpTimer > 0 && this.feeder != null && this.feeder.getNutrition() > 0;
+            return this.slime.entityData.get(SATURATION) <= Config.MAX_SATURATION.get() && this.giveUpTimer > 0 && this.feeder != null && this.feeder.getNutrition() > 0;
         }
 
         @Override
@@ -444,12 +522,12 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
                 this.slime.lookAt(EntityAnchorArgument.Anchor.FEET, this.nearestFeederPos.getBottomCenter());
                 ((Slime.SlimeMoveControl) this.slime.moveControl).setDirection(this.slime.getYRot(), this.slime.isDealsDamage());
                 if (this.feeder != null && this.slime.blockPosition().closerThan(this.nearestFeederPos, 2)) {
-                    int slimeHunger = Config.MAX_SATURATION.get() - this.slime.saturation;
+                    int slimeHunger = Config.MAX_SATURATION.get() - this.slime.entityData.get(SATURATION);
                     if (this.feeder.getNutrition() - slimeHunger > 0) {
-                        this.slime.saturation += slimeHunger;
+                        this.slime.entityData.set(SATURATION, this.slime.entityData.get(SATURATION) + slimeHunger);
                         this.feeder.shrinkNutrition(slimeHunger);
                     } else {
-                        this.slime.saturation += this.feeder.getNutrition();
+                        this.slime.entityData.set(SATURATION, this.slime.entityData.get(SATURATION) + this.feeder.getNutrition());
                         this.feeder.setNutrition(0);
                         SlimeFeederBlock.changeBlockState(this.slime.level(), this.feeder.getBlockState(), this.feeder.getBlockPos(), false);
                         Objects.requireNonNull(this.feeder.getLevel()).invalidateCapabilities(this.feeder.getBlockPos());

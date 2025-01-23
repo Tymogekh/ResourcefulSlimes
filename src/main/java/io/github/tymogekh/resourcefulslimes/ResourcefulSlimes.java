@@ -5,6 +5,7 @@ import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederMenu;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
+import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeMenu;
 import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
@@ -52,6 +53,8 @@ public class ResourcefulSlimes {
             () -> new SpawnEggItem(RESOURCE_SLIME.get(),
                     new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "random_resource_slime_spawn_egg")))));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<ResourceSlimeMenu>> RESOURCE_SLIME_MENU = MENUS.register("resource_slime_menu", () -> IMenuTypeExtension.create(ResourceSlimeMenu::new));
+
     public static final DeferredHolder<Block, SlimeFeederBlock> SLIME_FEEDER_BLOCK = BLOCKS.register("slime_feeder", () -> new SlimeFeederBlock(
             BlockBehaviour.Properties.of().sound(SoundType.STONE).strength(1.2F).explosionResistance(0.6F).setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "slime_feeder")))));
     public static final DeferredHolder<Item, BlockItem> SLIME_FEEDER_ITEM = ITEMS.register("slime_feeder", () -> new BlockItem(SLIME_FEEDER_BLOCK.get(),
@@ -70,6 +73,8 @@ public class ResourcefulSlimes {
     public static final DeferredHolder<Item, Item> CERTUS_QUARTZ = ITEMS.register("certus_quartz", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "certus_quartz")))));
 
     public static final DeferredHolder<Item, ResourceSlimeBucket> RESOURCE_SLIME_BUCKET = ITEMS.register("resource_slime_bucket", ResourceSlimeBucket::new);
+    public static final DeferredHolder<Item, Item> SLIMEPEDIA = ITEMS.register("slimepedia", () -> new Item(new Item.Properties()
+            .setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "slimepedia"))).stacksTo(1)));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_TAB = CREATIVE_TABS.register("tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("item_group." + MOD_ID + ".tab"))
@@ -77,6 +82,7 @@ public class ResourcefulSlimes {
             .displayItems(((itemDisplayParameters, output) -> {
                 output.accept(RANDOM_RESOURCE_SLIME_SPAWN_EGG.get());
                 output.accept(SLIME_FEEDER_ITEM.get());
+                output.accept(SLIMEPEDIA.get());
                 for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
                     CompoundTag tag = new CompoundTag();
                     tag.putByte("Variant", variant.getId());

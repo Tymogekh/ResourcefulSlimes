@@ -13,6 +13,7 @@ public class Config {
     public static final ModConfigSpec.ConfigValue<Integer> GIVE_UP_TIMER;
     public static final ModConfigSpec.ConfigValue<Integer> FOOD_CONSUMPTION;
     public static final ModConfigSpec.ConfigValue<Integer> MAX_NUTRITION_STORAGE;
+    public static final ModConfigSpec.ConfigValue<Integer> MUTATION_CHANCE_DECREASE;
 
     static {
         BUILDER.comment("Welcome to Resourceful Slimes Configs!");
@@ -37,6 +38,10 @@ public class Config {
                 .comment("Indicates how many ticks it takes before a resource slime gives up to reach a valid feeder.")
                 .worldRestart()
                 .defineInRange("give_up_timer", 100, 0, 1000000000);
+        MUTATION_CHANCE_DECREASE = BUILDER
+                .comment("The higher this value, the smaller the chance for a slime to mutate a trait upon splitting.")
+                .worldRestart()
+                .defineInRange("mutation_chance_decrease", 100, 0, 1000000000);
         BUILDER.pop();
         BUILDER.push("Slime Feeder Settings");
         MAX_NUTRITION_STORAGE = BUILDER
