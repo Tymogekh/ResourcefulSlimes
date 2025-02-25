@@ -51,10 +51,7 @@ import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.IntFunction;
 
 public class ResourceSlime extends Slime implements Bucketable, VariantHolder<ResourceSlime.Variant>, HasCustomInventoryScreen, MenuProvider {
@@ -306,19 +303,28 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     }
 
     private static Optional<BlockPos> findNearestFeeder(BlockPos pos, Level level){
-        int x = pos.getX();
-        int y = pos.getY();
-        int z = pos.getZ();
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        for(int i = x - 10; i <= x + 10; ++i){
-            for(int j = z - 10; j <= z + 10; ++j){
-                for(int k = y - 1; k <= y + 5; ++k){
-                    mutableBlockPos.set(i, k, j);
-                    if(pos.closerThan(mutableBlockPos, 10) && level.getBlockEntity(mutableBlockPos) instanceof SlimeFeederBlockEntity){
-                        return Optional.of(mutableBlockPos);
+        int[] xyz = {pos.getX(), pos.getY(), pos.getZ()};
+        ArrayList<int[]> visited = new ArrayList<>();
+        ArrayList<int[]> queue = new ArrayList<>();
+        BlockPos.MutableBlockPos checkedPos = new BlockPos.MutableBlockPos();
+        queue.add(xyz.clone());
+        while (!queue.isEmpty()) {
+            visited.add(queue.getFirst().clone());
+            for (int i = 0; i <= 2; ++i) {
+                for (int j : new int[] {-1, 1}) {
+                    final int[] current = queue.getFirst().clone();
+                    current[i] += j;
+                    checkedPos.set(current[0], current[1], current[2]);
+                    if (pos.closerThan(checkedPos, 10)) {
+                        if (level.getBlockEntity(checkedPos) instanceof SlimeFeederBlockEntity) {
+                            return Optional.of(checkedPos);
+                        } else if (visited.stream().noneMatch(x -> Arrays.equals(x, current)) && queue.stream().noneMatch(x -> Arrays.equals(x, current)) && !level.getBlockState(checkedPos).isViewBlocking(level, checkedPos)) {
+                            queue.addLast(current.clone());
+                        }
                     }
                 }
             }
+            queue.removeFirst();
         }
         return Optional.empty();
     }
@@ -478,6 +484,7 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
     class ResourceSlimeFeederGoal extends Goal {
 
         private int giveUpTimer;
+        private int cooldown = 1;
         private BlockPos nearestFeederPos;
         private SlimeFeederBlockEntity feeder;
         private final ResourceSlime slime;
@@ -490,18 +497,22 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
 
         @Override
         public boolean canUse() {
-            Optional<BlockPos> optional = findNearestFeeder(this.slime.blockPosition(), ResourceSlime.this.level());
-            if(optional.isPresent()) {
-                this.nearestFeederPos = optional.get();
-                this.feeder = (SlimeFeederBlockEntity) this.slime.level().getBlockEntity(this.nearestFeederPos);
-                return this.slime.entityData.get(SATURATION) <= Config.MAX_SATURATION.get() && this.feeder != null && this.feeder.getNutrition() > 0;
+            --this.cooldown;
+            if (this.cooldown <= 0) {
+                this.cooldown = 1000;
+                Optional<BlockPos> optional = findNearestFeeder(this.slime.blockPosition(), ResourceSlime.this.level());
+                if (optional.isPresent()) {
+                    this.nearestFeederPos = optional.get();
+                    this.feeder = (SlimeFeederBlockEntity) this.slime.level().getBlockEntity(this.nearestFeederPos);
+                    return this.slime.entityData.get(SATURATION) < Config.MAX_SATURATION.get() && this.feeder != null && this.feeder.getNutrition() > 0;
+                }
             }
             return false;
         }
 
         @Override
         public boolean canContinueToUse() {
-            return this.slime.entityData.get(SATURATION) <= Config.MAX_SATURATION.get() && this.giveUpTimer > 0 && this.feeder != null && this.feeder.getNutrition() > 0;
+            return this.slime.entityData.get(SATURATION) < Config.MAX_SATURATION.get() && this.giveUpTimer > 0 && this.feeder != null && this.feeder.getNutrition() > 0;
         }
 
         @Override

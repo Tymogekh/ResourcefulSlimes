@@ -37,7 +37,7 @@ public class Config {
         GIVE_UP_TIMER = BUILDER
                 .comment("Indicates how many ticks it takes before a resource slime gives up to reach a valid feeder.")
                 .worldRestart()
-                .defineInRange("give_up_timer", 100, 0, 1000000000);
+                .defineInRange("give_up_timer", 1000, 0, 1000000000);
         MUTATION_CHANCE_DECREASE = BUILDER
                 .comment("The higher this value, the smaller the chance for a slime to mutate a trait upon splitting.")
                 .worldRestart()
