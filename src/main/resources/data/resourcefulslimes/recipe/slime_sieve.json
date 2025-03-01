@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "X": "#minecraft:planks",
+    "Y": "minecraft:iron_ingot",
+    "Z": "#c:cobblestones",
+    "A": "minecraft:iron_bars"
+  },
+  "pattern": [
+    "XAX",
+    "Y Y",
+    "ZZZ"
+  ],
+  "result": {
+    "count": 1,
+    "id": "resourcefulslimes:slime_sieve"
+  }
+}

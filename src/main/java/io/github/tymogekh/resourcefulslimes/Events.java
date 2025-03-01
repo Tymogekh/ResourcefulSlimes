@@ -1,6 +1,7 @@
 package io.github.tymogekh.resourcefulslimes;
 
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederScreen;
+import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeSieveScreen;
 import io.github.tymogekh.resourcefulslimes.datagen.ItemModelGenerator;
 import io.github.tymogekh.resourcefulslimes.datagen.ItemTagGeneration;
 import io.github.tymogekh.resourcefulslimes.datagen.LangGeneration;
@@ -38,6 +39,7 @@ public class Events {
     @SubscribeEvent
     private static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ResourcefulSlimes.SLIME_FEEDER_MENU.get(), SlimeFeederScreen::new);
+        event.register(ResourcefulSlimes.SLIME_SIEVE_MENU.get(), SlimeSieveScreen::new);
         event.register(ResourcefulSlimes.RESOURCE_SLIME_MENU.get(), ResourceSlimeScreen::new);
     }
 
@@ -78,6 +80,7 @@ public class Events {
     @SubscribeEvent
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ResourcefulSlimes.SLIME_FEEDER_ENTITY.get(), (blockEntity, side) -> blockEntity.getHandler());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ResourcefulSlimes.SLIME_SIEVE_ENTITY.get(), (blockEntity, side) -> blockEntity.getHandler());
     }
 
     @SubscribeEvent

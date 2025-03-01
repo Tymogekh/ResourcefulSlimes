@@ -1,15 +1,19 @@
 package io.github.tymogekh.resourcefulslimes.blockentity.slot;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
+
 public class StackHandlerModified extends ItemStackHandler {
 
-    public StackHandlerModified(NonNullList<ItemStack> stacks){
+    private final Function<ItemStack, Boolean> FUNC;
+
+    public StackHandlerModified(NonNullList<ItemStack> stacks, Function<ItemStack, Boolean> function){
         super(stacks);
+        this.FUNC = function;
     }
 
     @Override
@@ -19,6 +23,6 @@ public class StackHandlerModified extends ItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        return stack.get(DataComponents.FOOD) != null;
+        return slot == 0 && this.FUNC.apply(stack);
     }
 }

@@ -1,5 +1,6 @@
 package io.github.tymogekh.resourcefulslimes.datagen;
 
+import io.github.tymogekh.resourcefulslimes.ItemInit;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import net.minecraft.data.PackOutput;
@@ -18,18 +19,21 @@ public class LangGeneration extends LanguageProvider {
     @Override
     protected void addTranslations() {
         add(ResourcefulSlimes.RESOURCE_SLIME.get(), "Resource Slime");
-        add(ResourcefulSlimes.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get(), "Random Resource Slime Spawn Egg");
-        add(ResourcefulSlimes.RESOURCE_SLIME_BUCKET.get(), "Resource Slime Bucket");
-        add(ResourcefulSlimes.SLIMEPEDIA.get(), "Slimepedia");
+        add(ItemInit.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get(), "Random Resource Slime Spawn Egg");
+        add(ItemInit.RESOURCE_SLIME_BUCKET.get(), "Resource Slime Bucket");
+        add(ItemInit.SLIMEPEDIA.get(), "Slimepedia");
         add(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get(), "Slime Feeder");
-        add(ResourcefulSlimes.SLIME_FEEDER_ITEM.get(), "Slime Feeder");
+        add(ItemInit.SLIME_FEEDER_ITEM.get(), "Slime Feeder");
+        add(ItemInit.SLIME_SIEVE_ITEM.get(), "Slime Sieve");
         add("item_group.resourcefulslimes.tab", "Resourceful Slimes");
         add("container.slimeFeeder", "Slime Feeder");
+        add("container.slimeSieve", "Slime Sieve");
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
             String displayName = variant.getDisplayName().getString();
             add(variant.getDisplayName().getString(), "Variant: " + capitalizeAll(displayName.replaceFirst("entity.resourcefulslimes.resource_slime.variant.", "")));
+            add(variant.getDropItem(), capitalizeAll(variant.getDropItem().toString().replaceFirst(ResourcefulSlimes.MOD_ID + ":", "")));
             if(variant.isModded()) {
-                add(variant.getDropItem(), capitalizeAll(variant.getDropItem().toString().replaceFirst(ResourcefulSlimes.MOD_ID + ":", "")));
+                add(variant.getIngotOrGem(), capitalizeAll(variant.getDropItem().toString().replaceFirst(ResourcefulSlimes.MOD_ID + ":", "")));
             }
         }
     }

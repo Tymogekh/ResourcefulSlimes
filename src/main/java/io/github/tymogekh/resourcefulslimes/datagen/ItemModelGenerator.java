@@ -1,5 +1,6 @@
 package io.github.tymogekh.resourcefulslimes.datagen;
 
+import io.github.tymogekh.resourcefulslimes.ItemInit;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import net.minecraft.data.PackOutput;
@@ -15,17 +16,22 @@ public class ItemModelGenerator extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        basicItem(ResourcefulSlimes.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get());
-        basicItem(ResourcefulSlimes.SLIMEPEDIA.get());
-        withExistingParent(ResourcefulSlimes.RESOURCE_SLIME_BUCKET.getRegisteredName(), mcLoc("item/generated"))
+        basicItem(ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "item/resource_slime_ball"))
+                .texture("layer0", "resourcefulslimes:item/resource_slime_ball");
+        basicItem(ItemInit.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get());
+        basicItem(ItemInit.SLIMEPEDIA.get());
+        withExistingParent(ItemInit.RESOURCE_SLIME_BUCKET.getRegisteredName(), mcLoc("item/generated"))
                 .texture("layer0", mcLoc("item/bucket"))
                 .texture("layer1", ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "item/resource_slime_bucket"));
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
-            if(variant.isModded() && variant.getDropItem().toString().contains("ingot")) {
-                withExistingParent(variant.getDropItem().toString(), ResourceLocation.withDefaultNamespace("item/iron_ingot"));
+            withExistingParent(variant.getDropItem().toString(), ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "item/resource_slime_ball"));
+            if(variant.isModded() && variant.getIngotOrGem().toString().contains("ingot")) {
+                withExistingParent(variant.getIngotOrGem().toString(), ResourceLocation.withDefaultNamespace("item/iron_ingot"));
             }
         }
-        withExistingParent(ResourcefulSlimes.CERTUS_QUARTZ.getRegisteredName(), ResourceLocation.withDefaultNamespace("item/quartz"));
+
+        withExistingParent(ItemInit.CERTUS_QUARTZ.getRegisteredName(), ResourceLocation.withDefaultNamespace("item/quartz"));
         simpleBlockItem(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get());
+        simpleBlockItem(ResourcefulSlimes.SLIME_SIEVE_BLOCK.get());
     }
 }

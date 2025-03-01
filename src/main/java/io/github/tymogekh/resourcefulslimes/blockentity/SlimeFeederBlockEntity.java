@@ -17,7 +17,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
@@ -39,7 +38,7 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
     public SlimeFeederBlockEntity(BlockPos pos, BlockState blockState) {
         super(ResourcefulSlimes.SLIME_FEEDER_ENTITY.get(), pos, blockState);
         this.items = NonNullList.withSize(1, ItemStack.EMPTY);
-        this.handler = new StackHandlerModified(this.items);
+        this.handler = new StackHandlerModified(this.items, stack -> stack.get(DataComponents.FOOD) != null);
     }
 
     @Override
@@ -59,7 +58,7 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
     @Override
     public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
         CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
+        tag.putInt("Nutrition", this.nutrition);
         return tag;
     }
 
@@ -91,7 +90,7 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     protected @NotNull AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory) {
-        return new SlimeFeederMenu(ResourcefulSlimes.SLIME_FEEDER_MENU.get(), i, inventory, ContainerLevelAccess.NULL, this);
+        return new SlimeFeederMenu(i, inventory, this);
     }
 
     public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, T t) {
@@ -117,6 +116,11 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
 
     public ItemStackHandler getHandler(){
         return this.handler;
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+        return stack.get(DataComponents.FOOD) != null && super.canPlaceItem(slot, stack);
     }
 
     public int getNutrition(){

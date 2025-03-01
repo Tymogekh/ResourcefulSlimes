@@ -43,11 +43,10 @@ public class SlimeFeederBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         } else {
             BlockEntity blockEntity = level.getBlockEntity(pos);
-
             if(blockEntity instanceof SlimeFeederBlockEntity){
                 player.openMenu((MenuProvider) blockEntity, buf -> buf.writeBlockPos(pos));
             }
-            return InteractionResult.CONSUME;
+            return InteractionResult.SUCCESS_SERVER;
         }
     }
 

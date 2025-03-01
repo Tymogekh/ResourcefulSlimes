@@ -5,6 +5,7 @@ import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,8 +22,9 @@ public class ItemTagGeneration extends ItemTagsProvider {
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
+            this.tag(Tags.Items.SLIME_BALLS).add(variant.getDropItem());
             if(variant.isModded()){
-                this.tag(variant.getResourceTag()).add(variant.getDropItem());
+                this.tag(variant.getResourceTag()).add(variant.getIngotOrGem());
             }
         }
     }

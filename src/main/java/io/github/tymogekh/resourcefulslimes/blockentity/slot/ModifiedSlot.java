@@ -1,20 +1,23 @@
 package io.github.tymogekh.resourcefulslimes.blockentity.slot;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class SlimeFeederSlot extends Slot {
+import java.util.function.Function;
 
+public class ModifiedSlot extends Slot {
 
-    public SlimeFeederSlot(Container container, int index, int xPosition, int yPosition) {
+    private final Function<ItemStack, Boolean> FUNC;
+
+    public ModifiedSlot(Container container, int index, int xPosition, int yPosition, Function<ItemStack, Boolean> function) {
         super(container, index, xPosition, yPosition);
+        this.FUNC = function;
     }
 
     @Override
     public boolean mayPlace(@NotNull ItemStack stack) {
-        return stack.get(DataComponents.FOOD) != null;
+        return this.FUNC.apply(stack);
     }
 }

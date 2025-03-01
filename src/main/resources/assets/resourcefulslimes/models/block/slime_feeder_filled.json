@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube",
-  "textures":{
+  "textures": {
     "down": "minecraft:block/cobblestone",
     "east": "resourcefulslimes:block/slime_feeder_filled",
     "north": "resourcefulslimes:block/slime_feeder_filled",
