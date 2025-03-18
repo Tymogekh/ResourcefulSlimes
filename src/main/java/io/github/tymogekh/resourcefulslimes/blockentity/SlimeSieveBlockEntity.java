@@ -2,8 +2,8 @@ package io.github.tymogekh.resourcefulslimes.blockentity;
 
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeSieveMenu;
+import io.github.tymogekh.resourcefulslimes.blockentity.recipe.SlimeSievingRecipe;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.StackHandlerModified;
-import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -12,11 +12,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,19 +27,20 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
+import java.util.Objects;
+import java.util.Optional;
 
 public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
 
     private NonNullList<ItemStack> items;
     private final StackHandlerModified handler;
     private short sievingProgress = 0;
-    public static HashMap<Item, Item> CRAFTING_RESULT = new HashMap<>();
 
     public SlimeSieveBlockEntity(BlockPos p_155077_, BlockState p_155078_) {
         super(ResourcefulSlimes.SLIME_SIEVE_ENTITY.get(), p_155077_, p_155078_);
         this.items = NonNullList.withSize(2, ItemStack.EMPTY);
-        this.handler = new StackHandlerModified(this.items, stack -> CRAFTING_RESULT.containsKey(stack.getItem()));
+        this.handler = new StackHandlerModified(this.items, stack -> this.level != null && !this.level.isClientSide() &&
+                ((ServerLevel) this.level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SLIME_SIEVE_RECIPE.get()).stream().anyMatch(rec -> rec.value().getIngredient().test(stack)));
     }
 
     @Override
@@ -69,20 +73,29 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
         SlimeSieveBlockEntity slimeSieve = (SlimeSieveBlockEntity) t;
         ItemStack ingredient = slimeSieve.items.getFirst();
         ItemStack result = slimeSieve.items.get(1);
-        if (!ingredient.isEmpty() && result.getCount() < 64) {
-            if (CRAFTING_RESULT.containsKey(ingredient.getItem()) && (result.isEmpty() || result.is(CRAFTING_RESULT.get(ingredient.getItem())))) {
-                if (slimeSieve.getSievingProgress() < 200) {
-                    slimeSieve.sievingProgress += 1;
-                } else {
-                    slimeSieve.sievingProgress = 0;
-                    if (result.isEmpty()) {
-                        result = new ItemStack(CRAFTING_RESULT.get(ingredient.getItem()));
+        Optional<RecipeHolder<SlimeSievingRecipe>> optional = Optional.empty();
+        if (slimeSieve.level != null && !slimeSieve.level.isClientSide()) {
+            optional = ((ServerLevel) slimeSieve.level).recipeAccess().getRecipeFor(ResourcefulSlimes.SLIME_SIEVE_RECIPE.get(), new SlimeSievingRecipe.SlimeSievingRecipeInput(ingredient), Objects.requireNonNull(slimeSieve.getLevel()));
+        }
+        if (optional.isPresent()) {
+            ItemStack expectedResult = optional.get().value().getResult();
+            if (!ingredient.isEmpty() && result.getCount() < 64 && result.isEmpty() || result.is(expectedResult.getItem())) {
+                    if (slimeSieve.getSievingProgress() < 200) {
+                        slimeSieve.sievingProgress += 1;
+                        if (slimeSieve.getSievingProgress() % 10 == 0) {
+                            level.playSound(null, pos, SoundEvents.SLIME_BLOCK_STEP, SoundSource.BLOCKS, 0.5F, 1.0F);
+                        }
                     } else {
-                        result.setCount(result.getCount() + 1);
+                        slimeSieve.sievingProgress = 0;
+                        if (result.isEmpty()) {
+                            result = expectedResult.copy();
+                        } else {
+                            result.setCount(result.getCount() + 1);
+                        }
+                        ingredient.shrink(1);
+                        slimeSieve.items.set(1, result);
+                        level.playSound(null, pos, SoundEvents.SLIME_BLOCK_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
                     }
-                    ingredient.shrink(1);
-                    slimeSieve.items.set(1, result);
-                }
             }
         } else {
             slimeSieve.sievingProgress = 0;
@@ -122,16 +135,10 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return slot == 0 && CRAFTING_RESULT.containsKey(stack.getItem()) && super.canPlaceItem(slot, stack);
+        return slot == 0 && this.level != null && !this.level.isClientSide() && ((ServerLevel) this.level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SLIME_SIEVE_RECIPE.get()).stream().anyMatch(rec -> rec.value().getIngredient().test(stack)) && super.canPlaceItem(slot, stack);
     }
 
     public int getSievingProgress() {
         return this.sievingProgress;
-    }
-
-    static {
-        for (ResourceSlime.Variant variant : ResourceSlime.Variant.values()) {
-            CRAFTING_RESULT.put(variant.getDropItem(), variant.getIngotOrGem());
-        }
     }
 }

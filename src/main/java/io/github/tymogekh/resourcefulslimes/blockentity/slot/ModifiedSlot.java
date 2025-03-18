@@ -9,15 +9,15 @@ import java.util.function.Function;
 
 public class ModifiedSlot extends Slot {
 
-    private final Function<ItemStack, Boolean> FUNC;
+    private final Function<ItemStack, Boolean> func;
 
     public ModifiedSlot(Container container, int index, int xPosition, int yPosition, Function<ItemStack, Boolean> function) {
         super(container, index, xPosition, yPosition);
-        this.FUNC = function;
+        this.func = function;
     }
 
     @Override
     public boolean mayPlace(@NotNull ItemStack stack) {
-        return this.FUNC.apply(stack);
+        return this.func.apply(stack);
     }
 }

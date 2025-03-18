@@ -1,0 +1,8 @@
+{
+  "type": "resourcefulslimes:slime_sieve_recipe",
+  "ingredient": "resourcefulslimes:osmium_slime_ball",
+  "result": {
+    "count": 1,
+    "id": "resourcefulslimes:osmium_ingot"
+  }
+}

@@ -2,10 +2,7 @@ package io.github.tymogekh.resourcefulslimes;
 
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederScreen;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeSieveScreen;
-import io.github.tymogekh.resourcefulslimes.datagen.ItemModelGenerator;
-import io.github.tymogekh.resourcefulslimes.datagen.ItemTagGeneration;
-import io.github.tymogekh.resourcefulslimes.datagen.LangGeneration;
-import io.github.tymogekh.resourcefulslimes.datagen.LootTableGenerator;
+import io.github.tymogekh.resourcefulslimes.datagen.*;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeScreen;
 import io.github.tymogekh.resourcefulslimes.entity.renderer.ResourceSlimeRenderer;
@@ -50,16 +47,17 @@ public class Events {
         ExistingFileHelper fileHelper = event.getExistingFileHelper();
         generator.addProvider(true, new ItemModelGenerator(output, fileHelper));
         generator.addProvider(true, new LangGeneration(output, "en_us"));
+        gatherServerData(event);
     }
 
 
-    @SubscribeEvent
-    private static void gatherServerData(GatherDataEvent.Server event) {
+    private static void gatherServerData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         generator.addProvider(true, new ItemTagGeneration(output, event.getLookupProvider(), event.getExistingFileHelper()));
         generator.addProvider(true, new LootTableProvider(output, Collections.emptySet(),
                 List.of(new LootTableProvider.SubProviderEntry(LootTableGenerator::new, LootContextParamSets.ENTITY)), event.getLookupProvider()));
+        generator.addProvider(true, new RecipeGenerator.Runner(output, event.getLookupProvider()));
     }
 
     @SubscribeEvent

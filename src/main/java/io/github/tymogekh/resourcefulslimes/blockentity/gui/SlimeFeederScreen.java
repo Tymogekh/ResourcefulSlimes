@@ -35,6 +35,9 @@ public class SlimeFeederScreen extends AbstractContainerScreen<SlimeFeederMenu> 
         int scaled = (int) (this.getMenu().getNutrition() / (float) Config.MAX_NUTRITION_STORAGE.get() * 49);
         guiGraphics.blitSprite(RenderType::guiTextured, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "container/slime_feeder/nutrition"),
                 18, 51, 0, 0, this.leftPos + 97, this.topPos + 64 - scaled, 18, scaled);
+        if (mouseX > this.leftPos + 97 && mouseX < this.leftPos + 115 && mouseY > this.topPos + 15 && mouseY < this.topPos + 64) {
+            guiGraphics.renderTooltip(this.getFont(), Component.literal(String.valueOf(this.getMenu().getNutrition())), mouseX, mouseY);
+        }
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
 

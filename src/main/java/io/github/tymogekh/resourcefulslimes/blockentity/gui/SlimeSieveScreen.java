@@ -28,9 +28,9 @@ public class SlimeSieveScreen extends AbstractContainerScreen<SlimeSieveMenu> im
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int x, int y, float v) {
         super.render(guiGraphics, x, y, v);
-        int scaled = (int) (this.getMenu().getSievingProgress() * 0.12F);
-        guiGraphics.blitSprite(RenderType::guiTextured, ResourceLocation.withDefaultNamespace("container/furnace/burn_progress"),
-                24, 16, 0, 0, this.leftPos + 80, this.topPos + 35, scaled, 16);
+        int scaled = (int) (this.getMenu().getSievingProgress() * 0.105F);
+        guiGraphics.blitSprite(RenderType::guiTextured, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "container/slime_sieve/sieving_progress"),
+                21, 17, 0, 0, this.leftPos + 81, this.topPos + 34, scaled, 17);
         renderTooltip(guiGraphics, x, y);
     }
 

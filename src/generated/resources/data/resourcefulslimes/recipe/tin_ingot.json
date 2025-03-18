@@ -1,0 +1,8 @@
+{
+  "type": "resourcefulslimes:slime_sieve_recipe",
+  "ingredient": "resourcefulslimes:tin_slime_ball",
+  "result": {
+    "count": 1,
+    "id": "resourcefulslimes:tin_ingot"
+  }
+}
