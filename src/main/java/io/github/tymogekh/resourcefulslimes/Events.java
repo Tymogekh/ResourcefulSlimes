@@ -54,7 +54,7 @@ public class Events {
     private static void gatherServerData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
-        generator.addProvider(true, new ItemTagGeneration(output, event.getLookupProvider(), event.getExistingFileHelper()));
+        generator.addProvider(true, new ItemTagGeneration(output, event.getLookupProvider()));
         generator.addProvider(true, new LootTableProvider(output, Collections.emptySet(),
                 List.of(new LootTableProvider.SubProviderEntry(LootTableGenerator::new, LootContextParamSets.ENTITY)), event.getLookupProvider()));
         generator.addProvider(true, new RecipeGenerator.Runner(output, event.getLookupProvider()));

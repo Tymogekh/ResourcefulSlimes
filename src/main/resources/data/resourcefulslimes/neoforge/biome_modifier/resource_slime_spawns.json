@@ -1,10 +1,10 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "#c:is_forest",
+  "biomes": "#c:is_mountain",
   "spawners": [
     {
       "type": "resourcefulslimes:resource_slime",
-      "weight": 2,
+      "weight": 1,
       "minCount": 1,
       "maxCount": 1
     }

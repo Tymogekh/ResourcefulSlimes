@@ -14,6 +14,7 @@ public class Config {
     public static final ModConfigSpec.ConfigValue<Integer> FOOD_CONSUMPTION;
     public static final ModConfigSpec.ConfigValue<Integer> MAX_NUTRITION_STORAGE;
     public static final ModConfigSpec.ConfigValue<Integer> MUTATION_CHANCE_DECREASE;
+    public static final ModConfigSpec.DoubleValue RESOURCE_SLIME_SPAWNS_RARITY;
 
     static {
         BUILDER.comment("Welcome to Resourceful Slimes Configs!");
@@ -42,6 +43,10 @@ public class Config {
                 .comment("The higher this value, the smaller the chance for a slime to mutate a trait upon splitting.")
                 .worldRestart()
                 .defineInRange("mutation_chance_decrease", 100, 0, 1000000000);
+        RESOURCE_SLIME_SPAWNS_RARITY = BUILDER
+                .comment("This value indicates how many times rarer resource slime spawns should be.")
+                .worldRestart()
+                .defineInRange("resource_slime_spawns_rarity", 10.0F, 1.0F, 1000000000.0F);
         BUILDER.pop();
         BUILDER.push("Slime Feeder Settings");
         MAX_NUTRITION_STORAGE = BUILDER

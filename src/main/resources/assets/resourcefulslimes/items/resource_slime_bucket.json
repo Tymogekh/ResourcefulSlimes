@@ -9,7 +9,7 @@
       },
       {
         "type": "resourcefulslimes:resource_slime_bucket",
-        "default": 14211288
+        "default": -1
       }
     ]
   }

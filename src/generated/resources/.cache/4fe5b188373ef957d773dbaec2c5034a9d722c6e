@@ -1,6 +1,7 @@
-// 1.21.4	2025-03-13T22:14:18.532693	resourcefulslimes_recipe_provider
+// 1.21.4	2025-04-03T20:40:35.7272886	resourcefulslimes_recipe_provider
 93533a63d3e9aba3466d802699969e19da6487d4 data/minecraft/advancement/recipes/amethyst_shard.json
 516b9fad9a13fada52b76df876711fdf55f71873 data/minecraft/advancement/recipes/coal.json
+1c8dfb559d76269462b0a0d1ec67f48e0f6fc556 data/minecraft/advancement/recipes/cobblestone.json
 df976cdfb02a1a6cc4e234fafd4cefa01d6eaf40 data/minecraft/advancement/recipes/copper_ingot.json
 0520abcfa40f7540fa8df69cfdf1e8972e87efa2 data/minecraft/advancement/recipes/diamond.json
 94a35c493cc17a1f0d4fe3ec284ab50923b71ad8 data/minecraft/advancement/recipes/emerald.json
@@ -12,6 +13,7 @@ efd8769033de75b1dd9114ae91ed302e9c6c97ff data/minecraft/advancement/recipes/iron
 870cdd9aee2a03443cf706dddb31d3d1849c57e1 data/minecraft/advancement/recipes/redstone.json
 0f1a3f19fd66d9a3896ff33eb85eeeebff32b56b data/minecraft/recipe/amethyst_shard.json
 4cef6bd3ba297e493489ea1c5475416d3eb0b1c2 data/minecraft/recipe/coal.json
+3e85b347806043f361491cb9fb37855340bab974 data/minecraft/recipe/cobblestone.json
 b3e2fc7a71d6c10d49a435432b27d41cb9cf06c8 data/minecraft/recipe/copper_ingot.json
 f4ce4abb7fa5949e38afe3659e1f0a73dbba7c20 data/minecraft/recipe/diamond.json
 708a37762d7b1a94a180cbe7f2b22ba89c891fba data/minecraft/recipe/emerald.json

@@ -44,8 +44,8 @@ import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.scores.PlayerTeam;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.EventHooks;
@@ -55,7 +55,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.IntFunction;
 
-public class ResourceSlime extends Slime implements Bucketable, VariantHolder<ResourceSlime.Variant>, HasCustomInventoryScreen, MenuProvider {
+public class ResourceSlime extends Slime implements Bucketable, HasCustomInventoryScreen, MenuProvider {
     public static final EntityDataAccessor<Byte> RESOURCE = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
     public static final EntityDataAccessor<Integer> SATURATION = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BOOLEAN);
@@ -166,32 +166,33 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         } else if (stack.is(ItemInit.SLIMEPEDIA)){
             this.openCustomInventoryScreen(player);
             return InteractionResult.SUCCESS;
+        } else if (this.getSize() == 1 && this.getVariant().equals(Variant.COBBLESTONE)) {
+            List<Variant> present = presentValues();
+            for (Variant variant : present) {
+                if (stack.is(variant.getConvertItem())) {
+                    stack.consume(1, player);
+                    this.setVariant(variant);
+                    this.particle = new ItemParticleOption(ParticleTypes.ITEM, this.getVariant().getIngotOrGem().getDefaultInstance());
+                    this.playSound(SoundEvents.ZOMBIE_VILLAGER_CONVERTED, 1.0F, 1.0F);
+                    break;
+                }
+            }
         }
         return super.mobInteract(player, hand);
     }
 
     @Override
     public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor p_33601_, @NotNull DifficultyInstance p_33602_, @NotNull EntitySpawnReason p_361992_, @Nullable SpawnGroupData p_33604_) {
-        if(p_361992_.equals(EntitySpawnReason.SPAWN_ITEM_USE)) {
+        if (p_361992_.equals(EntitySpawnReason.SPAWN_ITEM_USE)) {
             ArrayList<Variant> presentValues = presentValues();
             this.setVariant(presentValues.get(this.random.nextInt(presentValues.size())));
-        } else if(p_361992_.equals(EntitySpawnReason.BUCKET)){
+        } else if (p_361992_.equals(EntitySpawnReason.BUCKET)){
             this.setSize(1, false);
             return p_33604_;
-        } else if(p_361992_.equals(EntitySpawnReason.NATURAL) || p_361992_.equals(EntitySpawnReason.CHUNK_GENERATION)) {
-            Holder<Biome> holder = p_33601_.getBiome(this.blockPosition());
-            ArrayList<Variant> variants = new ArrayList<>();
-            for(Variant variant : presentValues()){
-                if(holder.is(variant.getSpawnBiomeTag())){
-                    variants.add(variant);
-                }
-            }
-            if(!variants.isEmpty()) {
-                Variant setVariant = spawnTie(variants);
-                p_33604_ = new ResourceSlimeGroupData(setVariant);
-                this.setVariant(setVariant);
-            } else {
-                this.remove(RemovalReason.DISCARDED);
+        } else if (p_361992_.equals(EntitySpawnReason.NATURAL) || p_361992_.equals(EntitySpawnReason.CHUNK_GENERATION)) {
+            this.setVariant(Variant.COBBLESTONE);
+            if (!(p_33604_ instanceof ResourceSlimeGroupData)) {
+                p_33604_ = new ResourceSlimeGroupData(this.getVariant());
             }
         }
         return super.finalizeSpawn(p_33601_, p_33602_, p_361992_, p_33604_);
@@ -201,23 +202,11 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         ArrayList<Variant> list = new ArrayList<>();
         for(Variant variant : ResourceSlime.Variant.values()){
             Iterable<Holder<Item>> iterable = BuiltInRegistries.ITEM.getTagOrEmpty(variant.getResourceTag());
-            if (iterable.spliterator().getExactSizeIfKnown() > 1 || !variant.isModded()){
+            if (iterable.spliterator().getExactSizeIfKnown() >= 1 || !variant.isModded()){
                 list.add(variant);
             }
         }
         return list;
-    }
-
-    private static Variant spawnTie(ArrayList<Variant> variants){
-        Variant variant1 = variants.getFirst();
-        Variant variant2 = variants.getLast();
-        if(variant2.equals(variant1)){
-            return variant1;
-        } else if((int)(Math.random()*2) == 0){
-            return variant2;
-        } else {
-            return variant1;
-        }
     }
 
     @Override
@@ -368,12 +357,24 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
 
     @Override
     public void loadFromBucketTag(@NotNull CompoundTag compoundTag) {
-        this.setVariant(Variant.byId(compoundTag.getByte("Variant")));
-        this.entityData.set(SATURATION, compoundTag.getInt("Saturation"));
-        this.entityData.set(GROWTH, compoundTag.getByte("Growth"));
-        this.entityData.set(HUNGER_REDUCTION, compoundTag.getByte("HungerReduction"));
-        this.entityData.set(SPLITTING, compoundTag.getByte("Splitting"));
-        this.entityData.set(PRODUCTIVENESS, compoundTag.getByte("Productiveness"));
+        if (compoundTag.getByte("Variant").isPresent()) {
+            this.setVariant(Variant.byId(compoundTag.getByte("Variant").get()));
+        }
+        if (compoundTag.getInt("Saturation").isPresent()) {
+            this.entityData.set(SATURATION, compoundTag.getInt("Saturation").get());
+        }
+        if (compoundTag.getByte("Growth").isPresent()) {
+            this.entityData.set(GROWTH, compoundTag.getByte("Growth").get());
+        }
+        if (compoundTag.getByte("HungerReduction").isPresent()) {
+            this.entityData.set(HUNGER_REDUCTION, compoundTag.getByte("HungerReduction").get());
+        }
+        if (compoundTag.getByte("Splitting").isPresent()) {
+            this.entityData.set(SPLITTING, compoundTag.getByte("Splitting").get());
+        }
+        if (compoundTag.getByte("Productiveness").isPresent()) {
+            this.entityData.set(PRODUCTIVENESS, compoundTag.getByte("Productiveness").get());
+        };
     }
 
     @Override
@@ -398,28 +399,36 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         return new ResourceSlimeMenu(ResourcefulSlimes.RESOURCE_SLIME_MENU.get(), i, this);
     }
 
+    @Override
+    public boolean checkSpawnRules(@NotNull LevelAccessor level, @NotNull EntitySpawnReason spawnReason) {
+        if (spawnReason.equals(EntitySpawnReason.NATURAL) || spawnReason.equals(EntitySpawnReason.CHUNK_GENERATION)) {
+            return (int) (Math.random()*Config.RESOURCE_SLIME_SPAWNS_RARITY.get()) == 0;
+        }
+        return super.checkSpawnRules(level, spawnReason);
+    }
 
     public enum Variant implements StringRepresentable {
-        IRON((byte) 0, Tags.Items.INGOTS_IRON, "iron", 0xd8d8d8, ItemInit.IRON_SLIME_BALL.get(), Tags.Biomes.IS_MOUNTAIN,  Items.IRON_INGOT, true),
-        GOLD((byte) 1, Tags.Items.INGOTS_GOLD, "gold", 0xf6ea20, ItemInit.GOLD_SLIME_BALL.get(), Tags.Biomes.IS_TAIGA, Items.GOLD_INGOT, true),
-        COPPER((byte) 2, Tags.Items.INGOTS_COPPER, "copper", 0xe17c52, ItemInit.COPPER_SLIME_BALL.get(), Tags.Biomes.IS_PLAINS, Items.COPPER_INGOT, true),
-        NETHERITE((byte) 3, Tags.Items.ORES_NETHERITE_SCRAP, "netherite_scrap", 0x624740, ItemInit.NETHERITE_SLIME_BALL.get(), Tags.Biomes.IS_DRY_NETHER,  Items.NETHERITE_SCRAP, true),
-        LAPIS((byte) 4, Tags.Items.GEMS_LAPIS, "lapis_lazuli", 0x425ec4, ItemInit.LAPIS_SLIME_BALL.get(), Tags.Biomes.IS_SNOWY, Items.LAPIS_LAZULI, true),
-        REDSTONE((byte) 5, Tags.Items.DUSTS_REDSTONE, "redstone", 0xa31803, ItemInit.REDSTONE_SLIME_BALL.get(), Tags.Biomes.IS_BADLANDS, Items.REDSTONE, true),
-        EMERALD((byte) 6, Tags.Items.GEMS_EMERALD, "emerald", 0x45dc5e, ItemInit.EMERALD_SLIME_BALL.get(), Tags.Biomes.IS_JUNGLE, Items.EMERALD, true),
-        DIAMOND((byte) 7, Tags.Items.GEMS_DIAMOND, "diamond", 0x68ecd8, ItemInit.DIAMOND_SLIME_BALL.get(), Tags.Biomes.IS_ICY, Items.DIAMOND,true),
-        QUARTZ((byte) 8, Tags.Items.GEMS_QUARTZ, "quartz", 0xe4dfd6, ItemInit.QUARTZ_SLIME_BALL.get(), Tags.Biomes.IS_WET_NETHER, Items.QUARTZ, true),
-        COAL((byte) 9, Tags.Items.ORES_COAL, "coal", 0x2e2e2e, ItemInit.COAL_SLIME_BALL.get(), Tags.Biomes.IS_DESERT, Items.COAL,true),
-        AMETHYST((byte) 10, Tags.Items.GEMS_AMETHYST, "amethyst", 0x8d6bcd, ItemInit.AMETHYST_SLIME_BALL.get(), Tags.Biomes.IS_CAVE, Items.AMETHYST_SHARD, true),
-        NICKEL((byte) 11, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/nickel")), "nickel", 0xbabc94, ItemInit.NICKEL_SLIME_BALL.get(), Tags.Biomes.IS_DESERT, ItemInit.NICKEL_INGOT.get(), false),
-        SILVER((byte) 12, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/silver")), "silver", 0x7ec3c3, ItemInit.SILVER_SLIME_BALL.get(), Tags.Biomes.IS_ICY, ItemInit.SILVER_INGOT.get(), false),
-        LEAD((byte) 13, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/lead")), "lead", 0x4f8bb1, ItemInit.LEAD_SLIME_BALL.get(), Tags.Biomes.IS_SNOWY, ItemInit.LEAD_INGOT.get(), false),
-        ZINC((byte) 14, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/zinc")), "zinc", 0xbfcece, ItemInit.ZINC_SLIME_BALL.get(), Tags.Biomes.IS_PLAINS, ItemInit.ZINC_INGOT.get(), false),
-        URANIUM((byte) 15, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/uranium")), "uranium", 0xbbba63, ItemInit.URANIUM_SLIME_BALL.get(), Tags.Biomes.IS_JUNGLE, ItemInit.URANIUM_INGOT.get(), false),
-        TIN((byte) 16, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/tin")), "tin", 0x85c3ca, ItemInit.TIN_SLIME_BALL.get(), Tags.Biomes.IS_MOUNTAIN, ItemInit.TIN_INGOT.get(), false),
-        ALUMINIUM((byte) 17, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/aluminium")), "aluminium", 0xadadad, ItemInit.ALUMINIUM_SLIME_BALL.get(), Tags.Biomes.IS_TAIGA, ItemInit.ALUMINIUM_INGOT.get(), false),
-        OSMIUM((byte) 18, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/osmium")), "osmium", 0x9ec6c7, ItemInit.OSMIUM_SLIME_BALL.get(), Tags.Biomes.IS_BADLANDS, ItemInit.OSMIUM_INGOT.get(), false),
-        CERTUS_QUARTZ((byte) 19, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:gems/certus_quartz")), "certus_quartz", 0x9df6ff, ItemInit.CERTUS_QUARTZ_SLIME_BALL.get(), Tags.Biomes.IS_CAVE, ItemInit.CERTUS_QUARTZ.get(), false);
+        COBBLESTONE((byte) 0, Tags.Items.COBBLESTONES, "cobblestone", 0x888788, ItemInit.COBBLESTONE_SLIME_BALL.get(), Tags.Items.COBBLESTONES, Items.COBBLESTONE, true),
+        IRON((byte) 1, Tags.Items.INGOTS_IRON, "iron", 0xd8d8d8, ItemInit.IRON_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_IRON,  Items.IRON_INGOT, true),
+        GOLD((byte) 2, Tags.Items.INGOTS_GOLD, "gold", 0xf6ea20, ItemInit.GOLD_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_GOLD, Items.GOLD_INGOT, true),
+        COPPER((byte) 3, Tags.Items.INGOTS_COPPER, "copper", 0xe17c52, ItemInit.COPPER_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_COPPER, Items.COPPER_INGOT, true),
+        NETHERITE((byte) 4, Tags.Items.ORES_NETHERITE_SCRAP, "netherite_scrap", 0x624740, ItemInit.NETHERITE_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_NETHERITE,  Items.NETHERITE_SCRAP, true),
+        LAPIS((byte) 5, Tags.Items.GEMS_LAPIS, "lapis_lazuli", 0x425ec4, ItemInit.LAPIS_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_LAPIS, Items.LAPIS_LAZULI, true),
+        REDSTONE((byte) 6, Tags.Items.DUSTS_REDSTONE, "redstone", 0xa31803, ItemInit.REDSTONE_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_REDSTONE, Items.REDSTONE, true),
+        EMERALD((byte) 7, Tags.Items.GEMS_EMERALD, "emerald", 0x45dc5e, ItemInit.EMERALD_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_EMERALD, Items.EMERALD, true),
+        DIAMOND((byte) 8, Tags.Items.GEMS_DIAMOND, "diamond", 0x68ecd8, ItemInit.DIAMOND_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_DIAMOND, Items.DIAMOND,true),
+        QUARTZ((byte) 9, Tags.Items.GEMS_QUARTZ, "quartz", 0xe4dfd6, ItemInit.QUARTZ_SLIME_BALL.get(), Tags.Items.GEMS_QUARTZ, Items.QUARTZ, true),
+        COAL((byte) 10, Tags.Items.ORES_COAL, "coal", 0x2e2e2e, ItemInit.COAL_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_COAL, Items.COAL,true),
+        AMETHYST((byte) 11, Tags.Items.GEMS_AMETHYST, "amethyst", 0x8d6bcd, ItemInit.AMETHYST_SLIME_BALL.get(), Tags.Items.GEMS_AMETHYST, Items.AMETHYST_SHARD, true),
+        NICKEL((byte) 12, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/nickel")), "nickel", 0xbabc94, ItemInit.NICKEL_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/nickel")), ItemInit.NICKEL_INGOT.get(), false),
+        SILVER((byte) 13, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/silver")), "silver", 0x7ec3c3, ItemInit.SILVER_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/silver")), ItemInit.SILVER_INGOT.get(), false),
+        LEAD((byte) 14, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/lead")), "lead", 0x4f8bb1, ItemInit.LEAD_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/lead")), ItemInit.LEAD_INGOT.get(), false),
+        ZINC((byte) 15, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/zinc")), "zinc", 0xbfcece, ItemInit.ZINC_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/zinc")), ItemInit.ZINC_INGOT.get(), false),
+        URANIUM((byte) 16, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/uranium")), "uranium", 0xbbba63, ItemInit.URANIUM_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/uranium")), ItemInit.URANIUM_INGOT.get(), false),
+        TIN((byte) 17, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/tin")), "tin", 0x85c3ca, ItemInit.TIN_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/tin")), ItemInit.TIN_INGOT.get(), false),
+        ALUMINIUM((byte) 18, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/aluminium")), "aluminium", 0xadadad, ItemInit.ALUMINIUM_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/aluminium")), ItemInit.ALUMINIUM_INGOT.get(), false),
+        OSMIUM((byte) 19, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/osmium")), "osmium", 0x9ec6c7, ItemInit.OSMIUM_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/osmium")), ItemInit.OSMIUM_INGOT.get(), false),
+        CERTUS_QUARTZ((byte) 20, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:gems/certus_quartz")), "certus_quartz", 0x9df6ff, ItemInit.CERTUS_QUARTZ_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:gems/certus_quartz")), ItemInit.CERTUS_QUARTZ.get(), false);
 
 
         private static final IntFunction<ResourceSlime.Variant> BY_ID = ByIdMap.continuous(Variant::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
@@ -429,17 +438,17 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         private final int color;
         private final Item dropItem;
         private final boolean isVanilla;
-        private final TagKey<Biome> spawnsIn;
+        private final TagKey<Item> converts;
         private final Item ingotOrGem;
         private final Component displayName;
 
-        Variant(byte id, TagKey<Item> resource_tag, String name, int color, Item drop, TagKey<Biome> spawnsIn, Item ingot_or_gem, boolean is_vanilla){
+        Variant(byte id, TagKey<Item> resource_tag, String name, int color, Item drop, TagKey<Item> converts, Item ingot_or_gem, boolean is_vanilla){
             this.resourceTag = resource_tag;
             this.id = id;
             this.name = name;
             this.color = color;
             this.dropItem = drop;
-            this.spawnsIn = spawnsIn;
+            this.converts = converts;
             this.isVanilla = is_vanilla;
             this.ingotOrGem = ingot_or_gem;
             this.displayName = Component.translatable("entity.resourcefulslimes.resource_slime.variant." + name);
@@ -452,6 +461,7 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         public byte getId(){
             return this.id;
         }
+
         public TagKey<Item> getResourceTag(){
             return this.resourceTag;
         }
@@ -464,9 +474,7 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
             return this.dropItem;
         }
 
-        public TagKey<Biome> getSpawnBiomeTag(){
-            return this.spawnsIn;
-        }
+        public TagKey<Item> getConvertItem() {return this.converts;}
 
         public Item getIngotOrGem(){return this.ingotOrGem;}
 
@@ -484,7 +492,7 @@ public class ResourceSlime extends Slime implements Bucketable, VariantHolder<Re
         }
     }
 
-    public record ResourceSlimeGroupData(Variant variant) implements SpawnGroupData {}
+    protected record ResourceSlimeGroupData(Variant variant) implements SpawnGroupData {}
 
     class ResourceSlimeFeederGoal extends Goal {
 

@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 public class ResourceSlimeBucket extends MobBucketItem {
@@ -69,9 +70,12 @@ public class ResourceSlimeBucket extends MobBucketItem {
         CustomData customData = stack.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY);
         CompoundTag tag = customData.copyTag();
         if(tag.contains("Variant")){
-            ResourceSlime.Variant variant = ResourceSlime.Variant.byId(tag.getByte("Variant"));
-            ChatFormatting[] formatting = new ChatFormatting[]{ChatFormatting.GRAY};
-            tooltipComponents.add(((MutableComponent) variant.getDisplayName()).withStyle(formatting));
+            Optional<Byte> optional = tag.getByte("Variant");
+            if (optional.isPresent()) {
+                ResourceSlime.Variant variant = ResourceSlime.Variant.byId(optional.get());
+                ChatFormatting[] formatting = new ChatFormatting[]{ChatFormatting.GRAY};
+                tooltipComponents.add(((MutableComponent) variant.getDisplayName()).withStyle(formatting));
+            }
         }
     }
 
@@ -84,7 +88,7 @@ public class ResourceSlimeBucket extends MobBucketItem {
         @Override
         public int calculate(@NotNull ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity) {
             CompoundTag tag = Objects.requireNonNull(itemStack.get(DataComponents.BUCKET_ENTITY_DATA)).copyTag();
-            return tag.contains("Variant") ? ARGB.opaque(ResourceSlime.Variant.byId(tag.getByte("Variant")).getColor()) : ARGB.opaque(defaultColor);
+            return tag.contains("Variant") && tag.getByte("Variant").isPresent() ? ARGB.opaque(ResourceSlime.Variant.byId(tag.getByte("Variant").get()).getColor()) : ARGB.opaque(defaultColor);
         }
 
         @Override
