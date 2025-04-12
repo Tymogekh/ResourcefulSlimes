@@ -59,11 +59,4 @@ public class SlimeSieveBlock extends BaseEntityBlock {
     public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
         return new SlimeSieveBlockEntity(blockPos, blockState);
     }
-
-    @Override
-    protected void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState newState, boolean movedByPiston) {
-        Containers.dropContentsOnDestroy(state, newState, level, pos);
-        level.invalidateCapabilities(pos);
-        super.onRemove(state, level, pos, newState, movedByPiston);
-    }
 }

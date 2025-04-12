@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "resourcefulslimes:item/lapis_slime_ball",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -12427580
+      }
+    ]
+  }
+}

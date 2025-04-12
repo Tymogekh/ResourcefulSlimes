@@ -4,15 +4,14 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -25,17 +24,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipProvider;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 
-public class ResourceSlimeBucket extends MobBucketItem {
+public class ResourceSlimeBucket extends MobBucketItem implements TooltipProvider {
 
     public ResourceSlimeBucket() {
         super(ResourcefulSlimes.RESOURCE_SLIME.get(), Fluids.EMPTY, SoundEvents.SLIME_SQUISH_SMALL, new Item.Properties().stacksTo(1).component(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY)
@@ -66,15 +66,16 @@ public class ResourceSlimeBucket extends MobBucketItem {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        CustomData customData = stack.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY);
-        CompoundTag tag = customData.copyTag();
-        if(tag.contains("Variant")){
-            Optional<Byte> optional = tag.getByte("Variant");
-            if (optional.isPresent()) {
-                ResourceSlime.Variant variant = ResourceSlime.Variant.byId(optional.get());
-                ChatFormatting[] formatting = new ChatFormatting[]{ChatFormatting.GRAY};
-                tooltipComponents.add(((MutableComponent) variant.getDisplayName()).withStyle(formatting));
+    public void addToTooltip(@NotNull TooltipContext tooltipContext, @NotNull Consumer<Component> consumer, @NotNull TooltipFlag tooltipFlag, @NotNull DataComponentGetter dataComponentGetter) {
+        CustomData customData = this.components().get(DataComponents.BUCKET_ENTITY_DATA);
+        if (customData != null) {
+            CompoundTag tag = customData.copyTag();
+            if (tag.contains("Variant")) {
+                Optional<Byte> optional = tag.getByte("Variant");
+                if (optional.isPresent()) {
+                    ResourceSlime.Variant variant = ResourceSlime.Variant.byId(optional.get());
+                    consumer.accept(variant.getDisplayName());
+                }
             }
         }
     }

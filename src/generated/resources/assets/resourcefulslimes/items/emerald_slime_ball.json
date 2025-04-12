@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "resourcefulslimes:item/emerald_slime_ball",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -12198818
+      }
+    ]
+  }
+}

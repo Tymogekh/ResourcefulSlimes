@@ -75,11 +75,4 @@ public class SlimeFeederBlock extends BaseEntityBlock {
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
         return blockEntityType == ResourcefulSlimes.SLIME_FEEDER_ENTITY.get() && !level.isClientSide() ? SlimeFeederBlockEntity::tick : null;
     }
-
-    @Override
-    protected void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState newState, boolean movedByPiston) {
-        Containers.dropContentsOnDestroy(state, newState, level, pos);
-        level.invalidateCapabilities(pos);
-        super.onRemove(state, level, pos, newState, movedByPiston);
-    }
 }

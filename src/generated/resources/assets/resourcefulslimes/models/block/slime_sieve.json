@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "minecraft:block/cobblestone",
+    "side": "resourcefulslimes:block/slime_sieve",
+    "top": "resourcefulslimes:block/slime_sieve_top"
+  }
+}

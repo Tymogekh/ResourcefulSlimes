@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "resourcefulslimes:item/netherite_slime_ball",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -10336448
+      }
+    ]
+  }
+}

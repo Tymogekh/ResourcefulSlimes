@@ -15,6 +15,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +45,9 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
     @Override
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(tag, registries);
-        this.nutrition = tag.getInt("Nutrition");
+        if (tag.getInt("Nutrition").isPresent()) {
+            this.nutrition = tag.getInt("Nutrition").get();
+        }
         ContainerHelper.loadAllItems(tag, this.items, registries);
     }
 
@@ -133,5 +136,15 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
 
     public void setNutrition(int nutrition){
         this.nutrition = nutrition;
+    }
+
+    @Override
+    public void preRemoveSideEffects(@NotNull BlockPos p_394577_, @NotNull BlockState p_394161_) {
+        Level level = this.getLevel();
+        if (level != null) {
+            Containers.dropContents(level, p_394577_, this);
+            level.invalidateCapabilities(p_394577_);
+        }
+        super.preRemoveSideEffects(p_394577_, p_394161_);
     }
 }

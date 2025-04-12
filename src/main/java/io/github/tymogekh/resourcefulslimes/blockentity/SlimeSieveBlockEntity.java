@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -46,7 +47,9 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
     @Override
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider p_338309_) {
         super.loadAdditional(tag, p_338309_);
-        this.sievingProgress = tag.getShort("SievingProgress");
+        if (tag.getShort("SievingProgress").isPresent()) {
+            this.sievingProgress = tag.getShort("SievingProgress").get();
+        }
         ContainerHelper.loadAllItems(tag, this.items, p_338309_);
     }
 
@@ -140,5 +143,15 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
 
     public int getSievingProgress() {
         return this.sievingProgress;
+    }
+
+    @Override
+    public void preRemoveSideEffects(@NotNull BlockPos p_394577_, @NotNull BlockState p_394161_) {
+        Level level = this.getLevel();
+        if (level != null) {
+            Containers.dropContents(level, p_394577_, this);
+            level.invalidateCapabilities(p_394577_);
+        }
+        super.preRemoveSideEffects(p_394577_, p_394161_);
     }
 }

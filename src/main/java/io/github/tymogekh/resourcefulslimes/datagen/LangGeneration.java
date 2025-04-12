@@ -33,7 +33,7 @@ public class LangGeneration extends LanguageProvider {
             add(variant.getDisplayName().getString(), "Variant: " + capitalizeAll(displayName.replaceFirst("entity.resourcefulslimes.resource_slime.variant.", "")));
             add(variant.getDropItem(), capitalizeAll(variant.getDropItem().toString().replaceFirst(ResourcefulSlimes.MOD_ID + ":", "")));
             if(variant.isModded()) {
-                add(variant.getIngotOrGem(), capitalizeAll(variant.getDropItem().toString().replaceFirst(ResourcefulSlimes.MOD_ID + ":", "")));
+                add(variant.getIngotOrGem(), capitalizeAll(variant.getIngotOrGem().toString().replaceFirst(ResourcefulSlimes.MOD_ID + ":", "")));
             }
         }
     }

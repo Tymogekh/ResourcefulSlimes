@@ -6,6 +6,7 @@ import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeMenu;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -97,13 +98,27 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.entityData.set(SATURATION, compound.getInt("Saturation"));
-        this.setVariant(ResourceSlime.Variant.byId(compound.getInt("Resource")));
-        this.setFromBucket(compound.getBoolean("FromBucket"));
-        this.entityData.set(GROWTH, compound.getByte("Growth"));
-        this.entityData.set(HUNGER_REDUCTION, compound.getByte("HungerReduction"));
-        this.entityData.set(SPLITTING, compound.getByte("Splitting"));
-        this.entityData.set(PRODUCTIVENESS, compound.getByte("Productiveness"));
+        if (compound.getInt("Saturation").isPresent()) {
+            this.entityData.set(SATURATION, compound.getInt("Saturation").get());
+        }
+        if (compound.getByte("Resource").isPresent()) {
+            this.setVariant(ResourceSlime.Variant.byId(compound.getByte("Resource").get()));
+        }
+        if (compound.getBoolean("FromBucket").isPresent()) {
+            this.setFromBucket(compound.getBoolean("FromBucket").get());
+        }
+        if (compound.getByte("Growth").isPresent()) {
+            this.entityData.set(GROWTH, compound.getByte("Growth").get());
+        }
+        if (compound.getByte("HungerReduction").isPresent()) {
+            this.entityData.set(HUNGER_REDUCTION, compound.getByte("HungerReduction").get());
+        }
+        if (compound.getByte("Splitting").isPresent()) {
+            this.entityData.set(SPLITTING, compound.getByte("Splitting").get());
+        }
+        if (compound.getByte("Productiveness").isPresent()) {
+            this.entityData.set(PRODUCTIVENESS, compound.getByte("Productiveness").get());
+        }
     }
 
     @Override
@@ -236,7 +251,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
                     p_381514_.entityData.set(HUNGER_REDUCTION, hunger_reduction);
                     p_381514_.entityData.set(SPLITTING, splitting);
                     p_381514_.entityData.set(PRODUCTIVENESS, productiveness);
-                    p_381514_.moveTo(this.getX() + (double)f2, this.getY() + 0.5, this.getZ() + (double)f3, this.random.nextFloat() * 360.0F, 0.0F);
+                    p_381514_.snapTo(this.getX() + (double)f2, this.getY() + 0.5, this.getZ() + (double)f3, this.random.nextFloat() * 360.0F, 0.0F);
                     if (this.random.nextInt(Config.MUTATION_CHANCE_DECREASE.get()) == 0) {
                         int stat = this.random.nextInt(3);
                         switch (stat){
@@ -374,7 +389,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
         }
         if (compoundTag.getByte("Productiveness").isPresent()) {
             this.entityData.set(PRODUCTIVENESS, compoundTag.getByte("Productiveness").get());
-        };
+        }
     }
 
     @Override
@@ -451,7 +466,8 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
             this.converts = converts;
             this.isVanilla = is_vanilla;
             this.ingotOrGem = ingot_or_gem;
-            this.displayName = Component.translatable("entity.resourcefulslimes.resource_slime.variant." + name);
+            ChatFormatting[] formatting = new ChatFormatting[]{ChatFormatting.GRAY};
+            this.displayName = Component.translatable("entity.resourcefulslimes.resource_slime.variant." + name).withStyle(formatting);
         }
 
         public static Variant byId(int id){
