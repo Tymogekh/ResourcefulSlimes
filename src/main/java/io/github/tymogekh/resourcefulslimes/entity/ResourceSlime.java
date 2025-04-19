@@ -6,6 +6,7 @@ import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeMenu;
+import io.github.tymogekh.resourcefulslimes.entity.particle.ItemColoredParticleOption;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -157,7 +158,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
     @Override
     protected @NotNull ParticleOptions getParticleType() {
         if(this.particle == null) {
-            this.particle = new ItemParticleOption(ParticleTypes.ITEM, this.getVariant().getIngotOrGem().getDefaultInstance());
+            this.particle = new ItemColoredParticleOption(this.getVariant().getColor(), new ItemStack(this.getVariant().getDropItem()));
         }
         return this.particle;
     }
@@ -307,7 +308,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
         }
     }
 
-    private static Optional<BlockPos> findNearestFeeder(BlockPos pos, Level level){
+    private static Optional<BlockPos> findClosestFeeder(BlockPos pos, Level level){
         int[] xyz = {pos.getX(), pos.getY(), pos.getZ()};
         ArrayList<int[]> visited = new ArrayList<>();
         ArrayList<int[]> queue = new ArrayList<>();
@@ -529,7 +530,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
             --this.cooldown;
             if (this.cooldown <= 0) {
                 this.cooldown = 1000;
-                Optional<BlockPos> optional = findNearestFeeder(this.slime.blockPosition(), ResourceSlime.this.level());
+                Optional<BlockPos> optional = findClosestFeeder(this.slime.blockPosition(), ResourceSlime.this.level());
                 if (optional.isPresent()) {
                     this.nearestFeederPos = optional.get();
                     this.feeder = (SlimeFeederBlockEntity) this.slime.level().getBlockEntity(this.nearestFeederPos);

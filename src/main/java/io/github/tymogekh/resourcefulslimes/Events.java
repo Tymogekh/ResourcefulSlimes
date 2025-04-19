@@ -5,6 +5,7 @@ import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeSieveScreen;
 import io.github.tymogekh.resourcefulslimes.datagen.*;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeScreen;
+import io.github.tymogekh.resourcefulslimes.entity.particle.ItemColoredParticle;
 import io.github.tymogekh.resourcefulslimes.entity.renderer.ResourceSlimeRenderer;
 import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
 import net.minecraft.data.DataGenerator;
@@ -22,6 +23,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
@@ -82,5 +84,10 @@ public class Events {
     @SubscribeEvent
     private static void itemTint(RegisterColorHandlersEvent.ItemTintSources event) {
         event.register(ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "resource_slime_bucket"), ResourceSlimeBucket.VariantTint.MAP_CODEC);
+    }
+
+    @SubscribeEvent
+    private static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpecial(ResourcefulSlimes.ITEM_COLORED_PARTICLE_TYPE.get(), new ItemColoredParticle.Provider());
     }
 }
