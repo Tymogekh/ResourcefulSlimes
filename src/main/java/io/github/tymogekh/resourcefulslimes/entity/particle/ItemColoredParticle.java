@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+@OnlyIn(Dist.CLIENT)
 public class ItemColoredParticle extends BreakingItemParticle {
 
     public ItemColoredParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, ItemStackRenderState renderState, ItemColoredParticleOption options) {
