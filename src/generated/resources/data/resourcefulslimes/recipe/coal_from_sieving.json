@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 1.0,
+  "ingredient": "resourcefulslimes:coal_slime_ball",
+  "result": {
+    "id": "minecraft:coal"
+  },
+  "ticks": 400
+}

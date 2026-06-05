@@ -6,17 +6,17 @@ import io.github.tymogekh.resourcefulslimes.entity.layer.ResourceSlimeLayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.SlimeRenderer;
 import net.minecraft.client.renderer.entity.state.SlimeRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.monster.Slime;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-@OnlyIn(Dist.CLIENT)
+
 public class ResourceSlimeRenderer extends SlimeRenderer {
 
-    public static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "textures/entity/resource_slime.png");
+    public static final Identifier TEXTURE_LOCATION = Identifier.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "textures/entity/resource_slime.png");
 
     public ResourceSlimeRenderer(EntityRendererProvider.Context p_174391_) {
         super(p_174391_);
@@ -25,8 +25,8 @@ public class ResourceSlimeRenderer extends SlimeRenderer {
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull SlimeRenderState p_365351_) {
-        return ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "textures/entity/resource_slime.png");
+    public @NotNull Identifier getTextureLocation(@NotNull SlimeRenderState p_365351_) {
+        return Identifier.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "textures/entity/resource_slime.png");
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeSieveBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -47,7 +46,7 @@ public class SlimeSieveBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
-        return blockEntityType == ResourcefulSlimes.SLIME_SIEVE_ENTITY.get() && ! level.isClientSide() ? SlimeSieveBlockEntity::tick : null;
+        return blockEntityType == ResourcefulSlimes.SLIME_SIEVE_ENTITY.get() && !level.isClientSide() ? SlimeSieveBlockEntity::tick : null;
     }
 
     @Override

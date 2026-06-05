@@ -1,12 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:item/iron_ingot",
-    "tints": [
-      {
-        "type": "minecraft:constant",
-        "value": -4539244
-      }
-    ]
+    "model": "resourcefulslimes:item/nickel_ingot"
   }
 }

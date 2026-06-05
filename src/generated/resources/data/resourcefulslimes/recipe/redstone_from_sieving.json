@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 0.5,
+  "ingredient": "resourcefulslimes:redstone_slime_ball",
+  "result": {
+    "id": "minecraft:redstone"
+  },
+  "ticks": 400
+}

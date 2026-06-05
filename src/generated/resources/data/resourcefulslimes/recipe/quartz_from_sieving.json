@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 1.0,
+  "ingredient": "resourcefulslimes:quartz_slime_ball",
+  "result": {
+    "id": "minecraft:quartz"
+  },
+  "ticks": 400
+}

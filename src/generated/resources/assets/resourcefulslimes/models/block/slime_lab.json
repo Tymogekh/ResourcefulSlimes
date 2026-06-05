@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "minecraft:block/copper_block",
+    "front": "resourcefulslimes:block/slime_lab_front",
+    "side": "resourcefulslimes:block/slime_lab_side",
+    "top": "minecraft:block/copper_block"
+  }
+}

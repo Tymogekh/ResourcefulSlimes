@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 0.5,
+  "ingredient": "resourcefulslimes:nickel_slime_ball",
+  "result": {
+    "id": "resourcefulslimes:nickel_ingot"
+  },
+  "ticks": 400
+}

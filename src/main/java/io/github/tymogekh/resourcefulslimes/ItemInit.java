@@ -1,63 +1,57 @@
 package io.github.tymogekh.resourcefulslimes;
 
 import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemInit {
 
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, ResourcefulSlimes.MOD_ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.Items.createItems(ResourcefulSlimes.MOD_ID);
 
-    public static final DeferredHolder<Item, BlockItem> SLIME_FEEDER_ITEM = ITEMS.register("slime_feeder", () -> new BlockItem(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get(),
-            new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "slime_feeder")))));
-    public static final DeferredHolder<Item, BlockItem> SLIME_SIEVE_ITEM = ITEMS.register("slime_sieve", () -> new BlockItem(ResourcefulSlimes.SLIME_SIEVE_BLOCK.get(),
-            new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "slime_sieve")))));
+    public static final DeferredItem<@NotNull BlockItem> SLIME_FEEDER_ITEM = ITEMS.registerItem("slime_feeder", props -> new BlockItem(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get(), props));
+    public static final DeferredItem<@NotNull BlockItem> SLIME_SIEVE_ITEM = ITEMS.registerItem("slime_sieve", props -> new BlockItem(ResourcefulSlimes.SLIME_SIEVE_BLOCK.get(), props));
+    public static final DeferredItem<@NotNull BlockItem> SLIME_LAB_ITEM = ITEMS.registerItem("slime_lab", props -> new BlockItem(ResourcefulSlimes.SLIME_LAB_BLOCK.get(), props));
 
-    public static final DeferredHolder<Item, SpawnEggItem> RANDOM_RESOURCE_SLIME_SPAWN_EGG = ITEMS.register("random_resource_slime_spawn_egg",
-            () -> new SpawnEggItem(ResourcefulSlimes.RESOURCE_SLIME.get(),
-                    new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "random_resource_slime_spawn_egg")))));
+    public static final DeferredItem<@NotNull SpawnEggItem> RANDOM_RESOURCE_SLIME_SPAWN_EGG = ITEMS.registerItem("random_resource_slime_spawn_egg",
+            props -> new SpawnEggItem(props.spawnEgg(ResourcefulSlimes.RESOURCE_SLIME.get())));
 
-    public static final DeferredHolder<Item, ResourceSlimeBucket> RESOURCE_SLIME_BUCKET = ITEMS.register("resource_slime_bucket", ResourceSlimeBucket::new);
-    public static final DeferredHolder<Item, Item> SLIMEPEDIA = ITEMS.register("slimepedia", () -> new Item(new Item.Properties()
-            .setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "slimepedia"))).stacksTo(1)));
+    public static final DeferredItem<@NotNull ResourceSlimeBucket> RESOURCE_SLIME_BUCKET = ITEMS.registerItem("resource_slime_bucket", ResourceSlimeBucket::new);
+    public static final DeferredItem<@NotNull Item> SLIMEPEDIA = ITEMS.registerItem("slimepedia", props -> new Item(props.stacksTo(1)));
 
-    public static final DeferredHolder<Item, Item> TIN_INGOT = ITEMS.register("tin_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "tin_ingot")))));
-    public static final DeferredHolder<Item, Item> ALUMINIUM_INGOT = ITEMS.register("aluminium_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "aluminium_ingot")))));
-    public static final DeferredHolder<Item, Item> URANIUM_INGOT = ITEMS.register("uranium_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "uranium_ingot")))));
-    public static final DeferredHolder<Item, Item> ZINC_INGOT = ITEMS.register("zinc_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "zinc_ingot")))));
-    public static final DeferredHolder<Item, Item> NICKEL_INGOT = ITEMS.register("nickel_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "nickel_ingot")))));
-    public static final DeferredHolder<Item, Item> OSMIUM_INGOT = ITEMS.register("osmium_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "osmium_ingot")))));
-    public static final DeferredHolder<Item, Item> LEAD_INGOT = ITEMS.register("lead_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "lead_ingot")))));
-    public static final DeferredHolder<Item, Item> SILVER_INGOT = ITEMS.register("silver_ingot", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "silver_ingot")))));
-    public static final DeferredHolder<Item, Item> CERTUS_QUARTZ = ITEMS.register("certus_quartz", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "certus_quartz")))));
+    public static final DeferredItem<@NotNull Item> TIN_INGOT = ITEMS.registerItem("tin_ingot", Item::new);
+    public static final DeferredItem<@NotNull Item> ALUMINIUM_INGOT = ITEMS.registerItem("aluminium_ingot", Item::new);
+    public static final DeferredItem<@NotNull Item> URANIUM_INGOT = ITEMS.registerItem("uranium_ingot", Item::new);
+    public static final DeferredItem<@NotNull Item> ZINC_INGOT = ITEMS.registerItem("zinc_ingot", Item::new);
+    public static final DeferredItem<@NotNull Item> NICKEL_INGOT = ITEMS.registerItem("nickel_ingot", Item::new);
+    public static final DeferredItem<@NotNull Item> OSMIUM_INGOT = ITEMS.registerItem("osmium_ingot", Item::new);
+    public static final DeferredItem<@NotNull Item> LEAD_INGOT = ITEMS.registerItem("lead_ingot", Item::new);
+    public static final DeferredItem<@NotNull Item> SILVER_INGOT = ITEMS.registerItem("silver_ingot", Item::new);
+    public static final DeferredItem<@NotNull Item> CERTUS_QUARTZ = ITEMS.registerItem("certus_quartz", Item::new);
 
-    public static final DeferredHolder<Item, Item> RESOURCE_SLIME_BALL = ITEMS.register("resource_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "resource_slime_ball")))));
-    public static final DeferredHolder<Item, Item> COBBLESTONE_SLIME_BALL = ITEMS.register("cobblestone_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "cobblestone_slime_ball")))));
-    public static final DeferredHolder<Item, Item> IRON_SLIME_BALL = ITEMS.register("iron_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "iron_slime_ball")))));
-    public static final DeferredHolder<Item, Item> GOLD_SLIME_BALL = ITEMS.register("gold_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "gold_slime_ball")))));
-    public static final DeferredHolder<Item, Item> COPPER_SLIME_BALL = ITEMS.register("copper_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "copper_slime_ball")))));
-    public static final DeferredHolder<Item, Item> NETHERITE_SLIME_BALL = ITEMS.register("netherite_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "netherite_slime_ball")))));
-    public static final DeferredHolder<Item, Item> LAPIS_SLIME_BALL = ITEMS.register("lapis_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "lapis_slime_ball")))));
-    public static final DeferredHolder<Item, Item> REDSTONE_SLIME_BALL = ITEMS.register("redstone_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "redstone_slime_ball")))));
-    public static final DeferredHolder<Item, Item> EMERALD_SLIME_BALL = ITEMS.register("emerald_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "emerald_slime_ball")))));
-    public static final DeferredHolder<Item, Item> DIAMOND_SLIME_BALL = ITEMS.register("diamond_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "diamond_slime_ball")))));
-    public static final DeferredHolder<Item, Item> QUARTZ_SLIME_BALL = ITEMS.register("quartz_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "quartz_slime_ball")))));
-    public static final DeferredHolder<Item, Item> COAL_SLIME_BALL = ITEMS.register("coal_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "coal_slime_ball")))));
-    public static final DeferredHolder<Item, Item> AMETHYST_SLIME_BALL = ITEMS.register("amethyst_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "amethyst_slime_ball")))));
-    public static final DeferredHolder<Item, Item> TIN_SLIME_BALL = ITEMS.register("tin_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "tin_slime_ball")))));
-    public static final DeferredHolder<Item, Item> ALUMINIUM_SLIME_BALL = ITEMS.register("aluminium_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "aluminium_slime_ball")))));
-    public static final DeferredHolder<Item, Item> URANIUM_SLIME_BALL = ITEMS.register("uranium_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "uranium_slime_ball")))));
-    public static final DeferredHolder<Item, Item> ZINC_SLIME_BALL = ITEMS.register("zinc_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "zinc_slime_ball")))));
-    public static final DeferredHolder<Item, Item> NICKEL_SLIME_BALL = ITEMS.register("nickel_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "nickel_slime_ball")))));
-    public static final DeferredHolder<Item, Item> OSMIUM_SLIME_BALL = ITEMS.register("osmium_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "osmium_slime_ball")))));
-    public static final DeferredHolder<Item, Item> LEAD_SLIME_BALL = ITEMS.register("lead_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "lead_slime_ball")))));
-    public static final DeferredHolder<Item, Item> SILVER_SLIME_BALL = ITEMS.register("silver_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "silver_slime_ball")))));
-    public static final DeferredHolder<Item, Item> CERTUS_QUARTZ_SLIME_BALL = ITEMS.register("certus_slime_ball", () -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "certus_slime_ball")))));
+    public static final DeferredItem<@NotNull Item> RESOURCE_SLIME_BALL = ITEMS.registerItem("resource_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> COBBLESTONE_SLIME_BALL = ITEMS.registerItem("cobblestone_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> IRON_SLIME_BALL = ITEMS.registerItem("iron_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> GOLD_SLIME_BALL = ITEMS.registerItem("gold_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> COPPER_SLIME_BALL = ITEMS.registerItem("copper_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> NETHERITE_SLIME_BALL = ITEMS.registerItem("netherite_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> LAPIS_SLIME_BALL = ITEMS.registerItem("lapis_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> REDSTONE_SLIME_BALL = ITEMS.registerItem("redstone_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> EMERALD_SLIME_BALL = ITEMS.registerItem("emerald_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> DIAMOND_SLIME_BALL = ITEMS.registerItem("diamond_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> QUARTZ_SLIME_BALL = ITEMS.registerItem("quartz_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> COAL_SLIME_BALL = ITEMS.registerItem("coal_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> AMETHYST_SLIME_BALL = ITEMS.registerItem("amethyst_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> TIN_SLIME_BALL = ITEMS.registerItem("tin_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> ALUMINIUM_SLIME_BALL = ITEMS.registerItem("aluminium_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> URANIUM_SLIME_BALL = ITEMS.registerItem("uranium_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> ZINC_SLIME_BALL = ITEMS.registerItem("zinc_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> NICKEL_SLIME_BALL = ITEMS.registerItem("nickel_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> OSMIUM_SLIME_BALL = ITEMS.registerItem("osmium_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> LEAD_SLIME_BALL = ITEMS.registerItem("lead_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> SILVER_SLIME_BALL = ITEMS.registerItem("silver_slime_ball", Item::new);
+    public static final DeferredItem<@NotNull Item> CERTUS_QUARTZ_SLIME_BALL = ITEMS.registerItem("certus_slime_ball", Item::new);
 }

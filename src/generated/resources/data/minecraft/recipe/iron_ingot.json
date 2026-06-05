@@ -1,8 +1,0 @@
-{
-  "type": "resourcefulslimes:slime_sieve_recipe",
-  "ingredient": "resourcefulslimes:iron_slime_ball",
-  "result": {
-    "count": 1,
-    "id": "minecraft:iron_ingot"
-  }
-}

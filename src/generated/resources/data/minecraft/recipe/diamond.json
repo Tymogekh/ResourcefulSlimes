@@ -1,8 +1,0 @@
-{
-  "type": "resourcefulslimes:slime_sieve_recipe",
-  "ingredient": "resourcefulslimes:diamond_slime_ball",
-  "result": {
-    "count": 1,
-    "id": "minecraft:diamond"
-  }
-}

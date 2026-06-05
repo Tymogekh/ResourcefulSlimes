@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 0.5,
+  "ingredient": "resourcefulslimes:emerald_slime_ball",
+  "result": {
+    "id": "minecraft:emerald"
+  },
+  "ticks": 400
+}

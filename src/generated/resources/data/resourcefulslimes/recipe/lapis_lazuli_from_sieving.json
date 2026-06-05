@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 0.5,
+  "ingredient": "resourcefulslimes:lapis_slime_ball",
+  "result": {
+    "id": "minecraft:lapis_lazuli"
+  },
+  "ticks": 400
+}

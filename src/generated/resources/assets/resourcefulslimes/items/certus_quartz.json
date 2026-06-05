@@ -1,12 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "resourcefulslimes:item/certus_quartz",
-    "tints": [
-      {
-        "type": "minecraft:constant",
-        "value": -6424833
-      }
-    ]
+    "model": "resourcefulslimes:item/certus_quartz"
   }
 }

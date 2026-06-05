@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "#c:ingots/copper",
+    "D": "minecraft:dispenser",
+    "F": "minecraft:furnace"
+  },
+  "pattern": [
+    "CCC",
+    "CFD",
+    "CCC"
+  ],
+  "result": {
+    "id": "resourcefulslimes:slime_lab"
+  }
+}

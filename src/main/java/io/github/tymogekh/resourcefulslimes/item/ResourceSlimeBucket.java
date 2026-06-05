@@ -8,10 +8,7 @@ import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ARGB;
@@ -32,17 +29,16 @@ import java.util.Objects;
 
 public class ResourceSlimeBucket extends MobBucketItem {
 
-    public ResourceSlimeBucket() {
-        super(ResourcefulSlimes.RESOURCE_SLIME.get(), Fluids.EMPTY, SoundEvents.SLIME_SQUISH_SMALL, new Item.Properties().stacksTo(1).component(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY)
-                .setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "resource_slime_bucket"))));
+    public ResourceSlimeBucket(Item.Properties properties) {
+        super(ResourcefulSlimes.RESOURCE_SLIME.get(), Fluids.EMPTY, SoundEvents.SLIME_SQUISH_SMALL, properties.stacksTo(1).component(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY));
     }
 
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
-        if(!context.getLevel().isClientSide()) {
+        if (!context.getLevel().isClientSide()) {
             Player player = context.getPlayer();
             this.spawn((ServerLevel) context.getLevel(), context.getItemInHand(), context.getClickedPos());
-            if(player != null) {
+            if (player != null) {
                 context.getItemInHand().shrink(1);
                 player.addItem(new ItemStack(Items.BUCKET));
                 player.swing(context.getHand());

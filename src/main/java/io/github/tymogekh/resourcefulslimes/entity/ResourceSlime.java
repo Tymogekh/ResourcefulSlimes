@@ -7,24 +7,27 @@ import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeMenu;
 import io.github.tymogekh.resourcefulslimes.entity.particle.ItemColoredParticleOption;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
@@ -40,14 +43,12 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.scores.PlayerTeam;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.EventHooks;
@@ -58,13 +59,13 @@ import java.util.*;
 import java.util.function.IntFunction;
 
 public class ResourceSlime extends Slime implements Bucketable, HasCustomInventoryScreen, MenuProvider {
-    public static final EntityDataAccessor<Byte> RESOURCE = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
+    public static final EntityDataAccessor<Integer> RESOURCE = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> SATURATION = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Byte> GROWTH = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
-    public static final EntityDataAccessor<Byte> SPLITTING = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
-    public static final EntityDataAccessor<Byte> HUNGER_REDUCTION = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
-    public static final EntityDataAccessor<Byte> PRODUCTIVENESS = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.BYTE);
+    public static final EntityDataAccessor<Integer> GROWTH = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> SPLITTING = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> HUNGER_REDUCTION = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> PRODUCTIVENESS = SynchedEntityData.defineId(ResourceSlime.class, EntityDataSerializers.INT);
     private ParticleOptions particle;
 
     public ResourceSlime(EntityType<? extends Slime> entityType, Level level) {
@@ -74,52 +75,50 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(RESOURCE, (byte) 0);
+        builder.define(RESOURCE, 0);
         builder.define(SATURATION, 0);
         builder.define(FROM_BUCKET, false);
-        builder.define(GROWTH, (byte) 0);
-        builder.define(SPLITTING, (byte) 0);
-        builder.define(HUNGER_REDUCTION, (byte) 0);
-        builder.define(PRODUCTIVENESS, (byte) 0);
+        builder.define(GROWTH, 0);
+        builder.define(SPLITTING, 0);
+        builder.define(HUNGER_REDUCTION, 0);
+        builder.define(PRODUCTIVENESS, 0);
     }
 
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putByte("Resource", this.getVariant().getId());
-        compound.putInt("Saturation", this.entityData.get(SATURATION));
-        compound.putBoolean("FromBucket", this.fromBucket());
-        compound.putByte("Growth", this.entityData.get(GROWTH));
-        compound.putByte("HungerReduction", this.entityData.get(HUNGER_REDUCTION));
-        compound.putByte("Splitting", this.entityData.get(SPLITTING));
-        compound.putByte("Productiveness", this.entityData.get(PRODUCTIVENESS));
+    protected void addAdditionalSaveData(@NotNull ValueOutput valueOutput) {
+        super.addAdditionalSaveData(valueOutput);
+        valueOutput.putInt("Resource", this.getVariant().getId());
+        valueOutput.putInt("Saturation", this.entityData.get(SATURATION));
+        valueOutput.putBoolean("FromBucket", this.fromBucket());
+        valueOutput.putInt("Growth", this.entityData.get(GROWTH));
+        valueOutput.putInt("HungerReduction", this.entityData.get(HUNGER_REDUCTION));
+        valueOutput.putInt("Splitting", this.entityData.get(SPLITTING));
+        valueOutput.putInt("Productiveness", this.entityData.get(PRODUCTIVENESS));
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.getInt("Saturation").isPresent()) {
-            this.entityData.set(SATURATION, compound.getInt("Saturation").get());
+    protected void readAdditionalSaveData(@NotNull ValueInput valueInput) {
+        super.readAdditionalSaveData(valueInput);
+        if (valueInput.getInt("Saturation").isPresent()) {
+            this.entityData.set(SATURATION, valueInput.getInt("Saturation").get());
         }
-        if (compound.getByte("Resource").isPresent()) {
-            this.setVariant(ResourceSlime.Variant.byId(compound.getByte("Resource").get()));
+        if (valueInput.getInt("Resource").isPresent()) {
+            this.setVariant(ResourceSlime.Variant.byId(valueInput.getInt("Resource").get()));
         }
-        if (compound.getBoolean("FromBucket").isPresent()) {
-            this.setFromBucket(compound.getBoolean("FromBucket").get());
+        if (valueInput.getInt("Growth").isPresent()) {
+            this.entityData.set(GROWTH, valueInput.getInt("Growth").get());
         }
-        if (compound.getByte("Growth").isPresent()) {
-            this.entityData.set(GROWTH, compound.getByte("Growth").get());
+        if (valueInput.getInt("HungerReduction").isPresent()) {
+            this.entityData.set(HUNGER_REDUCTION, valueInput.getInt("HungerReduction").get());
         }
-        if (compound.getByte("HungerReduction").isPresent()) {
-            this.entityData.set(HUNGER_REDUCTION, compound.getByte("HungerReduction").get());
+        if (valueInput.getInt("Splitting").isPresent()) {
+            this.entityData.set(SPLITTING, valueInput.getInt("Splitting").get());
         }
-        if (compound.getByte("Splitting").isPresent()) {
-            this.entityData.set(SPLITTING, compound.getByte("Splitting").get());
+        if (valueInput.getInt("Productiveness").isPresent()) {
+            this.entityData.set(PRODUCTIVENESS, valueInput.getInt("Productiveness").get());
         }
-        if (compound.getByte("Productiveness").isPresent()) {
-            this.entityData.set(PRODUCTIVENESS, compound.getByte("Productiveness").get());
-        }
+        this.setFromBucket(valueInput.getBooleanOr("FromBucket", false));
     }
 
     @Override
@@ -158,7 +157,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
     @Override
     protected @NotNull ParticleOptions getParticleType() {
         if(this.particle == null) {
-            this.particle = new ItemColoredParticleOption(this.getVariant().getColor(), new ItemStack(this.getVariant().getDropItem()));
+            this.particle = new ItemColoredParticleOption(this.getVariant().getColor(), new ItemStackTemplate(this.getVariant().getDropItem()));
         }
         return this.particle;
     }
@@ -182,17 +181,6 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
         } else if (stack.is(ItemInit.SLIMEPEDIA)){
             this.openCustomInventoryScreen(player);
             return InteractionResult.SUCCESS;
-        } else if (this.getSize() == 1 && this.getVariant().equals(Variant.COBBLESTONE)) {
-            List<Variant> present = presentValues();
-            for (Variant variant : present) {
-                if (stack.is(variant.getConvertItem())) {
-                    stack.consume(1, player);
-                    this.setVariant(variant);
-                    this.particle = new ItemParticleOption(ParticleTypes.ITEM, this.getVariant().getIngotOrGem().getDefaultInstance());
-                    this.playSound(SoundEvents.ZOMBIE_VILLAGER_CONVERTED, 1.0F, 1.0F);
-                    break;
-                }
-            }
         }
         return super.mobInteract(player, hand);
     }
@@ -200,25 +188,20 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
     @Override
     public @Nullable SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor p_33601_, @NotNull DifficultyInstance p_33602_, @NotNull EntitySpawnReason p_361992_, @Nullable SpawnGroupData p_33604_) {
         if (p_361992_.equals(EntitySpawnReason.SPAWN_ITEM_USE)) {
-            ArrayList<Variant> presentValues = presentValues();
+            List<Variant> presentValues = presentValues();
             this.setVariant(presentValues.get(this.random.nextInt(presentValues.size())));
         } else if (p_361992_.equals(EntitySpawnReason.BUCKET)){
             this.setSize(1, false);
             return p_33604_;
-        } else if (p_361992_.equals(EntitySpawnReason.NATURAL) || p_361992_.equals(EntitySpawnReason.CHUNK_GENERATION)) {
-            this.setVariant(Variant.COBBLESTONE);
-            if (!(p_33604_ instanceof ResourceSlimeGroupData)) {
-                p_33604_ = new ResourceSlimeGroupData(this.getVariant());
-            }
         }
         return super.finalizeSpawn(p_33601_, p_33602_, p_361992_, p_33604_);
     }
 
-    public static ArrayList<Variant> presentValues(){
-        ArrayList<Variant> list = new ArrayList<>();
+    public static List<Variant> presentValues(){
+        List<Variant> list = new ArrayList<>();
         for(Variant variant : ResourceSlime.Variant.values()){
             Iterable<Holder<Item>> iterable = BuiltInRegistries.ITEM.getTagOrEmpty(variant.getResourceTag());
-            if (iterable.spliterator().getExactSizeIfKnown() >= 1 || !variant.isModded()){
+            if (iterable.spliterator().getExactSizeIfKnown() > 1 || !variant.isModded()){
                 list.add(variant);
             }
         }
@@ -229,11 +212,11 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
     public void remove(@NotNull RemovalReason reason) {
         int i = this.getSize();
         Variant variant = this.getVariant();
-        byte growth = this.entityData.get(GROWTH);
-        byte splitting = this.entityData.get(SPLITTING);
-        byte hunger_reduction = this.entityData.get(HUNGER_REDUCTION);
-        byte productiveness = this.entityData.get(PRODUCTIVENESS);
-        if (!this.level().isClientSide && i > 1 && this.isDeadOrDying()) {
+        int growth = this.entityData.get(GROWTH);
+        int splitting = this.entityData.get(SPLITTING);
+        int hunger_reduction = this.entityData.get(HUNGER_REDUCTION);
+        int productiveness = this.entityData.get(PRODUCTIVENESS);
+        if (!this.level().isClientSide() && i > 1 && this.isDeadOrDying()) {
             float f = this.getDimensions(this.getPose()).width();
             float f1 = f / 2.0F;
             int j = i / 2;
@@ -258,22 +241,22 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
                         switch (stat){
                             case 0:
                                 if (growth < 10){
-                                p_381514_.entityData.set(GROWTH, (byte) (growth + 1));
+                                p_381514_.entityData.set(GROWTH, growth + 1);
                                 }
                                 break;
                             case 1:
                                 if (splitting < 10) {
-                                    p_381514_.entityData.set(SPLITTING, (byte) (splitting + 1));
+                                    p_381514_.entityData.set(SPLITTING, splitting + 1);
                                 }
                                 break;
                             case 2:
                                 if (hunger_reduction < 10) {
-                                    p_381514_.entityData.set(HUNGER_REDUCTION, (byte) (hunger_reduction + 1));
+                                    p_381514_.entityData.set(HUNGER_REDUCTION, hunger_reduction + 1);
                                 }
                                 break;
                             case 3:
                                 if (productiveness < 10) {
-                                    p_381514_.entityData.set(PRODUCTIVENESS, (byte) (productiveness + 1));
+                                    p_381514_.entityData.set(PRODUCTIVENESS, productiveness + 1);
                                 }
                                 break;
                         }
@@ -310,8 +293,8 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
 
     private static Optional<BlockPos> findClosestFeeder(BlockPos pos, Level level){
         int[] xyz = {pos.getX(), pos.getY(), pos.getZ()};
-        ArrayList<int[]> visited = new ArrayList<>();
-        ArrayList<int[]> queue = new ArrayList<>();
+        List<int[]> visited = new ArrayList<>();
+        List<int[]> queue = new ArrayList<>();
         BlockPos.MutableBlockPos checkedPos = new BlockPos.MutableBlockPos();
         queue.add(xyz.clone());
         while (!queue.isEmpty()) {
@@ -340,11 +323,6 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
     }
 
     @Override
-    protected boolean shouldDespawnInPeaceful() {
-        return false;
-    }
-
-    @Override
     protected boolean isDealsDamage() {
         return false;
     }
@@ -361,41 +339,41 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
 
     @Override
     public void saveToBucketTag(@NotNull ItemStack itemStack) {
-        CustomData.update(DataComponents.BUCKET_ENTITY_DATA, itemStack, compoundTag -> {
-            compoundTag.putByte("Variant", this.getVariant().getId());
-            compoundTag.putInt("Saturation", this.entityData.get(SATURATION));
-            compoundTag.putByte("Growth", this.entityData.get(GROWTH));
-            compoundTag.putByte("HungerReduction", this.entityData.get(HUNGER_REDUCTION));
-            compoundTag.putByte("Splitting", this.entityData.get(SPLITTING));
-            compoundTag.putByte("Productiveness", this.entityData.get(PRODUCTIVENESS));
+        CustomData.update(DataComponents.BUCKET_ENTITY_DATA, itemStack, valueInputTag -> {
+            valueInputTag.putInt("Variant", this.getVariant().getId());
+            valueInputTag.putInt("Saturation", this.entityData.get(SATURATION));
+            valueInputTag.putInt("Growth", this.entityData.get(GROWTH));
+            valueInputTag.putInt("HungerReduction", this.entityData.get(HUNGER_REDUCTION));
+            valueInputTag.putInt("Splitting", this.entityData.get(SPLITTING));
+            valueInputTag.putInt("Productiveness", this.entityData.get(PRODUCTIVENESS));
         });
     }
 
     @Override
-    public void loadFromBucketTag(@NotNull CompoundTag compoundTag) {
-        if (compoundTag.getByte("Variant").isPresent()) {
-            this.setVariant(Variant.byId(compoundTag.getByte("Variant").get()));
+    public void loadFromBucketTag(@NotNull CompoundTag valueInputTag) {
+        if (valueInputTag.getByte("Variant").isPresent()) {
+            this.setVariant(Variant.byId(valueInputTag.getByte("Variant").get()));
         }
-        if (compoundTag.getInt("Saturation").isPresent()) {
-            this.entityData.set(SATURATION, compoundTag.getInt("Saturation").get());
+        if (valueInputTag.getInt("Saturation").isPresent()) {
+            this.entityData.set(SATURATION, valueInputTag.getInt("Saturation").get());
         }
-        if (compoundTag.getByte("Growth").isPresent()) {
-            this.entityData.set(GROWTH, compoundTag.getByte("Growth").get());
+        if (valueInputTag.getInt("Growth").isPresent()) {
+            this.entityData.set(GROWTH, valueInputTag.getInt("Growth").get());
         }
-        if (compoundTag.getByte("HungerReduction").isPresent()) {
-            this.entityData.set(HUNGER_REDUCTION, compoundTag.getByte("HungerReduction").get());
+        if (valueInputTag.getInt("HungerReduction").isPresent()) {
+            this.entityData.set(HUNGER_REDUCTION, valueInputTag.getInt("HungerReduction").get());
         }
-        if (compoundTag.getByte("Splitting").isPresent()) {
-            this.entityData.set(SPLITTING, compoundTag.getByte("Splitting").get());
+        if (valueInputTag.getInt("Splitting").isPresent()) {
+            this.entityData.set(SPLITTING, valueInputTag.getInt("Splitting").get());
         }
-        if (compoundTag.getByte("Productiveness").isPresent()) {
-            this.entityData.set(PRODUCTIVENESS, compoundTag.getByte("Productiveness").get());
+        if (valueInputTag.getInt("Productiveness").isPresent()) {
+            this.entityData.set(PRODUCTIVENESS, valueInputTag.getInt("Productiveness").get());
         }
     }
 
     @Override
     public @NotNull ItemStack getBucketItemStack() {
-        return new ItemStack(ItemInit.RESOURCE_SLIME_BUCKET);
+        return new ItemStack(ItemInit.RESOURCE_SLIME_BUCKET.asItem());
     }
 
     @Override
@@ -415,56 +393,47 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
         return new ResourceSlimeMenu(ResourcefulSlimes.RESOURCE_SLIME_MENU.get(), i, this);
     }
 
-    @Override
-    public boolean checkSpawnRules(@NotNull LevelAccessor level, @NotNull EntitySpawnReason spawnReason) {
-        if (spawnReason.equals(EntitySpawnReason.NATURAL) || spawnReason.equals(EntitySpawnReason.CHUNK_GENERATION)) {
-            return (int) (Math.random()*Config.RESOURCE_SLIME_SPAWNS_RARITY.get()) == 0;
-        }
-        return super.checkSpawnRules(level, spawnReason);
-    }
-
     public enum Variant implements StringRepresentable {
-        COBBLESTONE((byte) 0, Tags.Items.COBBLESTONES, "cobblestone", 0x888788, ItemInit.COBBLESTONE_SLIME_BALL.get(), Tags.Items.COBBLESTONES, Items.COBBLESTONE, true),
-        IRON((byte) 1, Tags.Items.INGOTS_IRON, "iron", 0xd8d8d8, ItemInit.IRON_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_IRON,  Items.IRON_INGOT, true),
-        GOLD((byte) 2, Tags.Items.INGOTS_GOLD, "gold", 0xf6ea20, ItemInit.GOLD_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_GOLD, Items.GOLD_INGOT, true),
-        COPPER((byte) 3, Tags.Items.INGOTS_COPPER, "copper", 0xe17c52, ItemInit.COPPER_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_COPPER, Items.COPPER_INGOT, true),
-        NETHERITE((byte) 4, Tags.Items.ORES_NETHERITE_SCRAP, "netherite_scrap", 0x624740, ItemInit.NETHERITE_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_NETHERITE,  Items.NETHERITE_SCRAP, true),
-        LAPIS((byte) 5, Tags.Items.GEMS_LAPIS, "lapis_lazuli", 0x425ec4, ItemInit.LAPIS_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_LAPIS, Items.LAPIS_LAZULI, true),
-        REDSTONE((byte) 6, Tags.Items.DUSTS_REDSTONE, "redstone", 0xa31803, ItemInit.REDSTONE_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_REDSTONE, Items.REDSTONE, true),
-        EMERALD((byte) 7, Tags.Items.GEMS_EMERALD, "emerald", 0x45dc5e, ItemInit.EMERALD_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_EMERALD, Items.EMERALD, true),
-        DIAMOND((byte) 8, Tags.Items.GEMS_DIAMOND, "diamond", 0x68ecd8, ItemInit.DIAMOND_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_DIAMOND, Items.DIAMOND,true),
-        QUARTZ((byte) 9, Tags.Items.GEMS_QUARTZ, "quartz", 0xe4dfd6, ItemInit.QUARTZ_SLIME_BALL.get(), Tags.Items.GEMS_QUARTZ, Items.QUARTZ, true),
-        COAL((byte) 10, Tags.Items.ORES_COAL, "coal", 0x2e2e2e, ItemInit.COAL_SLIME_BALL.get(), Tags.Items.STORAGE_BLOCKS_COAL, Items.COAL,true),
-        AMETHYST((byte) 11, Tags.Items.GEMS_AMETHYST, "amethyst", 0x8d6bcd, ItemInit.AMETHYST_SLIME_BALL.get(), Tags.Items.GEMS_AMETHYST, Items.AMETHYST_SHARD, true),
-        NICKEL((byte) 12, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/nickel")), "nickel", 0xbabc94, ItemInit.NICKEL_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/nickel")), ItemInit.NICKEL_INGOT.get(), false),
-        SILVER((byte) 13, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/silver")), "silver", 0x7ec3c3, ItemInit.SILVER_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/silver")), ItemInit.SILVER_INGOT.get(), false),
-        LEAD((byte) 14, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/lead")), "lead", 0x4f8bb1, ItemInit.LEAD_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/lead")), ItemInit.LEAD_INGOT.get(), false),
-        ZINC((byte) 15, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/zinc")), "zinc", 0xbfcece, ItemInit.ZINC_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/zinc")), ItemInit.ZINC_INGOT.get(), false),
-        URANIUM((byte) 16, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/uranium")), "uranium", 0xbbba63, ItemInit.URANIUM_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/uranium")), ItemInit.URANIUM_INGOT.get(), false),
-        TIN((byte) 17, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/tin")), "tin", 0x85c3ca, ItemInit.TIN_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/tin")), ItemInit.TIN_INGOT.get(), false),
-        ALUMINIUM((byte) 18, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/aluminium")), "aluminium", 0xadadad, ItemInit.ALUMINIUM_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/aluminium")), ItemInit.ALUMINIUM_INGOT.get(), false),
-        OSMIUM((byte) 19, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:ingots/osmium")), "osmium", 0x9ec6c7, ItemInit.OSMIUM_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:storage_blocks/osmium")), ItemInit.OSMIUM_INGOT.get(), false),
-        CERTUS_QUARTZ((byte) 20, TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:gems/certus_quartz")), "certus_quartz", 0x9df6ff, ItemInit.CERTUS_QUARTZ_SLIME_BALL.get(), TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse("c:gems/certus_quartz")), ItemInit.CERTUS_QUARTZ.get(), false);
-
+        COBBLESTONE(0, Tags.Items.COBBLESTONES, "cobblestone", 0x888788, ItemInit.COBBLESTONE_SLIME_BALL.get(), Items.COBBLESTONE, true),
+        IRON(1, Tags.Items.INGOTS_IRON, "iron", 0xd8d8d8, ItemInit.IRON_SLIME_BALL.get(), Items.IRON_INGOT, true),
+        GOLD(2, Tags.Items.INGOTS_GOLD, "gold", 0xf6ea20, ItemInit.GOLD_SLIME_BALL.get(), Items.GOLD_INGOT, true),
+        COPPER(3, Tags.Items.INGOTS_COPPER, "copper", 0xe17c52, ItemInit.COPPER_SLIME_BALL.get(), Items.COPPER_INGOT, true),
+        NETHERITE(4, Tags.Items.ORES_NETHERITE_SCRAP, "netherite_scrap", 0x624740, ItemInit.NETHERITE_SLIME_BALL.get(), Items.NETHERITE_SCRAP, true),
+        LAPIS(5, Tags.Items.GEMS_LAPIS, "lapis_lazuli", 0x425ec4, ItemInit.LAPIS_SLIME_BALL.get(), Items.LAPIS_LAZULI, true),
+        REDSTONE(6, Tags.Items.DUSTS_REDSTONE, "redstone", 0xa31803, ItemInit.REDSTONE_SLIME_BALL.get(), Items.REDSTONE, true),
+        EMERALD(7, Tags.Items.GEMS_EMERALD, "emerald", 0x45dc5e, ItemInit.EMERALD_SLIME_BALL.get(), Items.EMERALD, true),
+        DIAMOND(8, Tags.Items.GEMS_DIAMOND, "diamond", 0x68ecd8, ItemInit.DIAMOND_SLIME_BALL.get(), Items.DIAMOND,true),
+        QUARTZ(9, Tags.Items.GEMS_QUARTZ, "quartz", 0xe4dfd6, ItemInit.QUARTZ_SLIME_BALL.get(), Items.QUARTZ, true),
+        COAL(10, Tags.Items.ORES_COAL, "coal", 0x2e2e2e, ItemInit.COAL_SLIME_BALL.get(), Items.COAL,true),
+        AMETHYST(11, Tags.Items.GEMS_AMETHYST, "amethyst", 0x8d6bcd, ItemInit.AMETHYST_SLIME_BALL.get(), Items.AMETHYST_SHARD, true),
+        NICKEL(12, ItemTags.create(Identifier.fromNamespaceAndPath("c", "ingots/nickel")), "nickel", 0xccbaaa, ItemInit.NICKEL_SLIME_BALL.get(), ItemInit.NICKEL_INGOT.get(), false),
+        SILVER(13, ItemTags.create(Identifier.fromNamespaceAndPath("c", "ingots/silver")), "silver", 0xe0e9f4, ItemInit.SILVER_SLIME_BALL.get(), ItemInit.SILVER_INGOT.get(), false),
+        LEAD(14, ItemTags.create(Identifier.fromNamespaceAndPath("c", "ingots/lead")), "lead", 0x7a83bc, ItemInit.LEAD_SLIME_BALL.get(), ItemInit.LEAD_INGOT.get(), false),
+        ZINC(15, ItemTags.create(Identifier.fromNamespaceAndPath("c", "ingots/zinc")), "zinc", 0xbfcfd3, ItemInit.ZINC_SLIME_BALL.get(), ItemInit.ZINC_INGOT.get(), false),
+        URANIUM(16, ItemTags.create(Identifier.fromNamespaceAndPath("c", "ingots/uranium")), "uranium", 0xfdffa8, ItemInit.URANIUM_SLIME_BALL.get(), ItemInit.URANIUM_INGOT.get(), false),
+        TIN(17, ItemTags.create(Identifier.fromNamespaceAndPath("c", "ingots/tin")), "tin", 0xcdc1a6, ItemInit.TIN_SLIME_BALL.get(), ItemInit.TIN_INGOT.get(), false),
+        ALUMINIUM(18, ItemTags.create(Identifier.fromNamespaceAndPath("c", "ingots/aluminium")), "aluminium", 0xe7e4ef, ItemInit.ALUMINIUM_SLIME_BALL.get(), ItemInit.ALUMINIUM_INGOT.get(), false),
+        OSMIUM(19, ItemTags.create(Identifier.fromNamespaceAndPath("c", "ingots/osmium")), "osmium", 0x85a4c6, ItemInit.OSMIUM_SLIME_BALL.get(), ItemInit.OSMIUM_INGOT.get(), false),
+        CERTUS_QUARTZ(20, ItemTags.create(Identifier.fromNamespaceAndPath("c", "gems/certus_quartz")), "certus_quartz", 0xa0cee7, ItemInit.CERTUS_QUARTZ_SLIME_BALL.get(), ItemInit.CERTUS_QUARTZ.get(), false);
 
         private static final IntFunction<ResourceSlime.Variant> BY_ID = ByIdMap.continuous(Variant::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
+        public static final EnumCodec<ResourceSlime.@NotNull Variant> CODEC = StringRepresentable.fromEnum(Variant::values);
+        public static final StreamCodec<ByteBuf, ResourceSlime.Variant> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Variant::getId);
         private final TagKey<Item> resourceTag;
-        private final byte id;
+        private final int id;
         private final String name;
         private final int color;
         private final Item dropItem;
         private final boolean isVanilla;
-        private final TagKey<Item> converts;
         private final Item ingotOrGem;
         private final Component displayName;
 
-        Variant(byte id, TagKey<Item> resource_tag, String name, int color, Item drop, TagKey<Item> converts, Item ingot_or_gem, boolean is_vanilla){
+        Variant(int id, TagKey<Item> resource_tag, String name, int color, Item drop, Item ingot_or_gem, boolean is_vanilla){
             this.resourceTag = resource_tag;
             this.id = id;
             this.name = name;
             this.color = color;
             this.dropItem = drop;
-            this.converts = converts;
             this.isVanilla = is_vanilla;
             this.ingotOrGem = ingot_or_gem;
             ChatFormatting[] formatting = new ChatFormatting[]{ChatFormatting.GRAY};
@@ -475,7 +444,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
             return BY_ID.apply(id);
         }
 
-        public byte getId(){
+        public int getId(){
             return this.id;
         }
 
@@ -490,8 +459,6 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
         public Item getDropItem(){
             return this.dropItem;
         }
-
-        public TagKey<Item> getConvertItem() {return this.converts;}
 
         public Item getIngotOrGem(){return this.ingotOrGem;}
 
@@ -529,7 +496,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
         public boolean canUse() {
             --this.cooldown;
             if (this.cooldown <= 0) {
-                this.cooldown = 1000;
+                this.cooldown = 500;
                 Optional<BlockPos> optional = findClosestFeeder(this.slime.blockPosition(), ResourceSlime.this.level());
                 if (optional.isPresent()) {
                     this.nearestFeederPos = optional.get();

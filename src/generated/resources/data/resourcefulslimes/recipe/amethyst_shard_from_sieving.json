@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 0.5,
+  "ingredient": "resourcefulslimes:amethyst_slime_ball",
+  "result": {
+    "id": "minecraft:amethyst_shard"
+  },
+  "ticks": 400
+}

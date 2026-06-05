@@ -3,7 +3,7 @@ package io.github.tymogekh.resourcefulslimes.blockentity;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederMenu;
-import io.github.tymogekh.resourcefulslimes.blockentity.slot.StackHandlerModified;
+import io.github.tymogekh.resourcefulslimes.blockentity.slot.SingleHandlerWithCheck;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -23,7 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,29 +34,27 @@ import java.util.Objects;
 public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
 
     private NonNullList<ItemStack> items;
-    private final StackHandlerModified handler;
+    private final SingleHandlerWithCheck handler;
     private int nutrition;
 
     public SlimeFeederBlockEntity(BlockPos pos, BlockState blockState) {
         super(ResourcefulSlimes.SLIME_FEEDER_ENTITY.get(), pos, blockState);
         this.items = NonNullList.withSize(1, ItemStack.EMPTY);
-        this.handler = new StackHandlerModified(this.items, stack -> stack.get(DataComponents.FOOD) != null);
+        this.handler = new SingleHandlerWithCheck(this.items.getFirst(), resource -> resource.has(DataComponents.FOOD));
     }
 
     @Override
-    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.getInt("Nutrition").isPresent()) {
-            this.nutrition = tag.getInt("Nutrition").get();
-        }
-        ContainerHelper.loadAllItems(tag, this.items, registries);
+    protected void saveAdditional(@NotNull ValueOutput valueOutput) {
+        super.saveAdditional(valueOutput);
+        valueOutput.putInt("Nutrition", this.nutrition);
+        ContainerHelper.saveAllItems(valueOutput, this.items);
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.putInt("Nutrition", this.nutrition);
-        ContainerHelper.saveAllItems(tag, this.items, registries);
+    protected void loadAdditional(@NotNull ValueInput valueInput) {
+        super.loadAdditional(valueInput);
+        this.nutrition = valueInput.getIntOr("Nutrition", 0);
+        ContainerHelper.loadAllItems(valueInput, this.items);
     }
 
     @Override
@@ -66,13 +65,13 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
     }
 
     @Override
-    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+    public @Nullable Packet<@NotNull ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
     protected @NotNull Component getDefaultName() {
-        return Component.translatable("container.slimeFeeder");
+        return Component.translatable("container."  + ResourcefulSlimes.MOD_ID + ".slimeFeeder");
     }
 
     @Override
@@ -89,6 +88,10 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
     @Override
     public int getContainerSize() {
         return this.items.size();
+    }
+
+    public SingleHandlerWithCheck getHandler() {
+        return this.handler;
     }
 
     @Override
@@ -115,10 +118,6 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
             slimeFeeder.setChanged();
             level.sendBlockUpdated(pos, state, state, 0);
         }
-    }
-
-    public ItemStackHandler getHandler(){
-        return this.handler;
     }
 
     @Override

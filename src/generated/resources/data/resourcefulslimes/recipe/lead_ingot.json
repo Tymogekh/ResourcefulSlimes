@@ -1,8 +1,0 @@
-{
-  "type": "resourcefulslimes:slime_sieve_recipe",
-  "ingredient": "resourcefulslimes:lead_slime_ball",
-  "result": {
-    "count": 1,
-    "id": "resourcefulslimes:lead_ingot"
-  }
-}

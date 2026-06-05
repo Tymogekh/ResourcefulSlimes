@@ -1,7 +1,10 @@
 {
   "block.resourcefulslimes.slime_feeder": "Slime Feeder",
-  "container.slimeFeeder": "Slime Feeder",
-  "container.slimeSieve": "Slime Sieve",
+  "block.resourcefulslimes.slime_lab": "Slime Lab",
+  "block.resourcefulslimes.slime_sieve": "Slime Sieve",
+  "container.resourcefulslimes.slimeFeeder": "Slime Feeder",
+  "container.resourcefulslimes.slimeLab": "Slime Lab",
+  "container.resourcefulslimes.slimeSieve": "Slime Sieve",
   "entity.resourcefulslimes.resource_slime": "Resource Slime",
   "entity.resourcefulslimes.resource_slime.variant.aluminium": "Variant: Aluminium",
   "entity.resourcefulslimes.resource_slime.variant.amethyst": "Variant: Amethyst",
@@ -51,6 +54,7 @@
   "item.resourcefulslimes.silver_ingot": "Silver Ingot",
   "item.resourcefulslimes.silver_slime_ball": "Silver Slime Ball",
   "item.resourcefulslimes.slime_feeder": "Slime Feeder",
+  "item.resourcefulslimes.slime_lab": "Slime Lab",
   "item.resourcefulslimes.slime_sieve": "Slime Sieve",
   "item.resourcefulslimes.slimepedia": "Slimepedia",
   "item.resourcefulslimes.tin_ingot": "Tin Ingot",
@@ -59,5 +63,7 @@
   "item.resourcefulslimes.uranium_slime_ball": "Uranium Slime Ball",
   "item.resourcefulslimes.zinc_ingot": "Zinc Ingot",
   "item.resourcefulslimes.zinc_slime_ball": "Zinc Slime Ball",
-  "item_group.resourcefulslimes.tab": "Resourceful Slimes"
+  "item_group.resourcefulslimes.tab": "Resourceful Slimes",
+  "recipe.resourcefulslimes.sieving": "Sieving",
+  "recipe.resourcefulslimes.slime_creation": "Slime Creation"
 }

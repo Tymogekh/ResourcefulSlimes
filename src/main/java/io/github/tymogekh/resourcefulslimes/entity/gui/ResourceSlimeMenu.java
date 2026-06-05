@@ -31,7 +31,7 @@ public class ResourceSlimeMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return this.slime.isAlive() && player.canInteractWithEntity(this.slime, 4.0);
+        return this.slime.isAlive() && player.isWithinEntityInteractionRange(this.slime, 4.0);
     }
 
     public ResourceSlime getSlime() {

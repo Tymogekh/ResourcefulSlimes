@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 0.25,
+  "ingredient": "resourcefulslimes:diamond_slime_ball",
+  "result": {
+    "id": "minecraft:diamond"
+  },
+  "ticks": 400
+}

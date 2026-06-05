@@ -26,7 +26,7 @@ public class SlimeFeederMenu extends AbstractContainerMenu {
         addSlot(new ModifiedSlot(this.blockEntity, 0, 62, 31, stack -> stack.get(DataComponents.FOOD) != null));
         for(int column = 0; column < 3; column++){
             for(int row = 0; row < 9; row++){
-                addSlot(new Slot(inventory, 9 + row + column * 9, 8 + row*18, 84 + column*18));
+                addSlot(new Slot(inventory, 9 + row + column * 9, 8 + row * 18, 84 + column * 18));
             }
         }
         for(int hotbarColumn = 0; hotbarColumn < 9; hotbarColumn++){

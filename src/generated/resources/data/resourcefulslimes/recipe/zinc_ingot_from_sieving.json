@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 0.5,
+  "ingredient": "resourcefulslimes:zinc_slime_ball",
+  "result": {
+    "id": "resourcefulslimes:zinc_ingot"
+  },
+  "ticks": 400
+}

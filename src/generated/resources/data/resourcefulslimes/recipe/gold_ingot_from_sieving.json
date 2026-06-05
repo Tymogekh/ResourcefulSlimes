@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 0.5,
+  "ingredient": "resourcefulslimes:gold_slime_ball",
+  "result": {
+    "id": "minecraft:gold_ingot"
+  },
+  "ticks": 400
+}

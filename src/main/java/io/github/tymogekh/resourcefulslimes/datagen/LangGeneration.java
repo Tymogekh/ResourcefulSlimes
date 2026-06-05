@@ -24,10 +24,16 @@ public class LangGeneration extends LanguageProvider {
         add(ItemInit.SLIMEPEDIA.get(), "Slimepedia");
         add(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get(), "Slime Feeder");
         add(ItemInit.SLIME_FEEDER_ITEM.get(), "Slime Feeder");
+        add(ResourcefulSlimes.SLIME_SIEVE_BLOCK.get(), "Slime Sieve");
         add(ItemInit.SLIME_SIEVE_ITEM.get(), "Slime Sieve");
+        add(ResourcefulSlimes.SLIME_LAB_BLOCK.get(), "Slime Lab");
+        add(ItemInit.SLIME_LAB_ITEM.get(), "Slime Lab");
         add("item_group.resourcefulslimes.tab", "Resourceful Slimes");
-        add("container.slimeFeeder", "Slime Feeder");
-        add("container.slimeSieve", "Slime Sieve");
+        add("container." + ResourcefulSlimes.MOD_ID + ".slimeFeeder", "Slime Feeder");
+        add("container." + ResourcefulSlimes.MOD_ID + ".slimeSieve", "Slime Sieve");
+        add("container." + ResourcefulSlimes.MOD_ID + ".slimeLab", "Slime Lab");
+        add("recipe." + ResourcefulSlimes.MOD_ID + ".sieving", "Sieving");
+        add("recipe." + ResourcefulSlimes.MOD_ID + ".slime_creation", "Slime Creation");
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
             String displayName = variant.getDisplayName().getString();
             add(variant.getDisplayName().getString(), "Variant: " + capitalizeAll(displayName.replaceFirst("entity.resourcefulslimes.resource_slime.variant.", "")));

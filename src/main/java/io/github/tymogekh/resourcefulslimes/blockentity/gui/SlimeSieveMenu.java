@@ -28,7 +28,7 @@ public class SlimeSieveMenu extends AbstractContainerMenu {
         this.blockEntity = (SlimeSieveBlockEntity) blockEntity;
         Level level = inventory.player.level();
         addSlot(new ModifiedSlot(this.blockEntity, 0, 55, 35,
-                stack -> !level.isClientSide() && ((ServerLevel) level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SLIME_SIEVE_RECIPE.get()).stream().anyMatch(rec -> rec.value().getIngredient().test(stack))));
+                stack -> !level.isClientSide() && ((ServerLevel) level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SIEVING_RECIPE.get()).stream().anyMatch(rec -> rec.value().getIngredient().test(stack))));
         addSlot(new ModifiedSlot(this.blockEntity, 1, 116, 35, stack -> false));
         for(int column = 0; column < 3; column++){
             for(int row = 0; row < 9; row++){
@@ -43,12 +43,10 @@ public class SlimeSieveMenu extends AbstractContainerMenu {
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int i) {
         Slot slot = this.getSlot(i);
-        ItemStack stack;
-        ItemStack stack1 = slot.getItem();
+        ItemStack stack = slot.getItem();
         if(slot.hasItem()){
-            stack = stack1;
             if(i > 1){
-                if(!this.blockEntity.canPlaceItem(i, stack) && !this.moveItemStackTo(stack, 0, 1, false)){
+                if(!this.moveItemStackTo(stack, 0, 1, false)){
                     return ItemStack.EMPTY;
                 }
             } else if(!this.moveItemStackTo(stack, 2, 38, false)){

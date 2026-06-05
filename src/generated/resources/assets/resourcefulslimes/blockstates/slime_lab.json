@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "resourcefulslimes:block/slime_lab",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "resourcefulslimes:block/slime_lab"
+    },
+    "facing=south": {
+      "model": "resourcefulslimes:block/slime_lab",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "resourcefulslimes:block/slime_lab",
+      "y": 270
+    }
+  }
+}

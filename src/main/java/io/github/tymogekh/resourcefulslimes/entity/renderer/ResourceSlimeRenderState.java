@@ -1,11 +1,11 @@
 package io.github.tymogekh.resourcefulslimes.entity.renderer;
 
 import net.minecraft.client.renderer.entity.state.SlimeRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ResourceSlimeRenderState extends SlimeRenderState {
 
-    public ResourceLocation texture;
+    public Identifier texture;
     public int color;
 
     public ResourceSlimeRenderState(){

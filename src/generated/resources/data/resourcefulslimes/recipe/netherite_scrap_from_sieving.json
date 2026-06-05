@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulslimes:sieving",
+  "chance": 0.25,
+  "ingredient": "resourcefulslimes:netherite_slime_ball",
+  "result": {
+    "id": "minecraft:netherite_scrap"
+  },
+  "ticks": 400
+}

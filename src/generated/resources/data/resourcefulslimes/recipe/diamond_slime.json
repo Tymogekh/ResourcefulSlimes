@@ -1,0 +1,18 @@
+{
+  "type": "resourcefulslimes:slime_creation",
+  "ingredients": [
+    {
+      "count": 1,
+      "ingredient": "minecraft:slime_block"
+    },
+    {
+      "count": 64,
+      "ingredient": "minecraft:diamond"
+    },
+    {
+      "count": 32,
+      "ingredient": "resourcefulslimes:lapis_slime_ball"
+    }
+  ],
+  "output_variant": "diamond"
+}
