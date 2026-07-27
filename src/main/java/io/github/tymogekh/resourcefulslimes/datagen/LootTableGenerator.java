@@ -1,9 +1,9 @@
 package io.github.tymogekh.resourcefulslimes.datagen;
 
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.advancements.criterion.SlimePredicate;
+import net.minecraft.advancements.predicates.MinMaxBounds;
+import net.minecraft.advancements.predicates.entity.CubeMobPredicate;
+import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.world.entity.EntityType;
@@ -43,7 +43,7 @@ public class LootTableGenerator extends EntityLootSubProvider {
                                                 .when(
                                                         LootItemEntityPropertyCondition.hasProperties(
                                                                 LootContext.EntityTarget.THIS,
-                                                                EntityPredicate.Builder.entity().subPredicate(SlimePredicate.sized(MinMaxBounds.Ints.atLeast(2)))
+                                                                EntityPredicate.Builder.entity().cubeMob(CubeMobPredicate.sized(MinMaxBounds.Ints.atLeast(2)))
                                                         )
                                                 )
                                 )

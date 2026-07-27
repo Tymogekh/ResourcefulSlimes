@@ -48,6 +48,6 @@ public class SlimesJEIPlugin implements IModPlugin {
     @Override
     public void registerGuiHandlers(@NotNull IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(SlimeSieveScreen.class, 81, 34, 21, 17, SIEVING_TYPE);
-        registration.addRecipeClickArea(SlimeLabScreen.class, 16, 22, 72, 33, SLIME_CREATION_TYPE);
+        registration.addRecipeClickArea(SlimeLabScreen.class, 72, 34, 16, 20, SLIME_CREATION_TYPE);
     }
 }

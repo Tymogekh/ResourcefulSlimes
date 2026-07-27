@@ -27,6 +27,7 @@
   "entity.resourcefulslimes.resource_slime.variant.tin": "Variant: Tin",
   "entity.resourcefulslimes.resource_slime.variant.uranium": "Variant: Uranium",
   "entity.resourcefulslimes.resource_slime.variant.zinc": "Variant: Zinc",
+  "gui.resourcefulslimes.resourceSlime": "Resource Slime",
   "item.resourcefulslimes.aluminium_ingot": "Aluminium Ingot",
   "item.resourcefulslimes.aluminium_slime_ball": "Aluminium Slime Ball",
   "item.resourcefulslimes.amethyst_slime_ball": "Amethyst Slime Ball",

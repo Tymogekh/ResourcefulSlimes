@@ -52,6 +52,7 @@ public class SlimeLabScreen extends AbstractContainerScreen<@NotNull SlimeLabMen
         if (resourceSlime != null) {
             resourceSlime.setSize(1, true);
             resourceSlime.setVariant(variant);
+            resourceSlime.setId(-1);
         }
         return resourceSlime;
     }

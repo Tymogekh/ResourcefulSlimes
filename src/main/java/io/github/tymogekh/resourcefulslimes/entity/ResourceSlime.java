@@ -15,7 +15,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -36,9 +35,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Bucketable;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.animal.Bucketable;
-import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.monster.cubemob.AbstractCubeMob;
+import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
@@ -49,6 +49,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.EventHooks;
@@ -123,10 +124,10 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new Slime.SlimeFloatGoal(this));
+        this.goalSelector.addGoal(1, new AbstractCubeMob.CubeMobFloatGoal(this));
         this.goalSelector.addGoal(2, new ResourceSlimeFeederGoal(this));
-        this.goalSelector.addGoal(3, new Slime.SlimeRandomDirectionGoal(this));
-        this.goalSelector.addGoal(5, new Slime.SlimeKeepOnJumpingGoal(this));
+        this.goalSelector.addGoal(3, new AbstractCubeMob.CubeMobRandomDirectionGoal(this));
+        this.goalSelector.addGoal(5, new AbstractCubeMob.CubeMobKeepOnJumpingGoal(this));
     }
 
     public void setVariant(Variant variant){
@@ -393,6 +394,11 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
         return new ResourceSlimeMenu(ResourcefulSlimes.RESOURCE_SLIME_MENU.get(), i, this);
     }
 
+    @Override
+    public @NotNull Component getDisplayName() {
+        return Component.translatable("gui." + ResourcefulSlimes.MOD_ID + ".resourceSlime");
+    }
+
     public enum Variant implements StringRepresentable {
         COBBLESTONE(0, Tags.Items.COBBLESTONES, "cobblestone", 0x888788, ItemInit.COBBLESTONE_SLIME_BALL.get(), Items.COBBLESTONE, true),
         IRON(1, Tags.Items.INGOTS_IRON, "iron", 0xd8d8d8, ItemInit.IRON_SLIME_BALL.get(), Items.IRON_INGOT, true),
@@ -527,8 +533,8 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
         public void tick() {
             --this.giveUpTimer;
             if(this.nearestFeederPos != null && this.feeder != null && this.feeder.getNutrition() > 0) {
-                this.slime.lookAt(EntityAnchorArgument.Anchor.FEET, this.nearestFeederPos.getBottomCenter());
-                ((Slime.SlimeMoveControl) this.slime.moveControl).setDirection(this.slime.getYRot(), this.slime.isDealsDamage());
+                this.slime.lookAt(EntityAnchorArgument.Anchor.FEET, new Vec3(this.nearestFeederPos).add(0.5F, 1.0F, 0.5F));
+                ((AbstractCubeMob.CubeMobMoveControl<?>) this.slime.moveControl).setDirection(this.slime.getYRot(), this.slime.isDealsDamage());
                 if (this.feeder != null && this.slime.blockPosition().closerThan(this.nearestFeederPos, 2)) {
                     int slimeHunger = Config.MAX_SATURATION.get() - this.slime.entityData.get(SATURATION);
                     if (this.feeder.getNutrition() - slimeHunger > 0) {

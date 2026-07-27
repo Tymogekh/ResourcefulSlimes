@@ -8,9 +8,7 @@ import net.minecraft.client.renderer.entity.SlimeRenderer;
 import net.minecraft.client.renderer.entity.state.SlimeRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
-import net.minecraft.world.entity.monster.Slime;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.monster.cubemob.Slime;
 import org.jetbrains.annotations.NotNull;
 
 

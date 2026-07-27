@@ -32,6 +32,7 @@ public class LangGeneration extends LanguageProvider {
         add("container." + ResourcefulSlimes.MOD_ID + ".slimeFeeder", "Slime Feeder");
         add("container." + ResourcefulSlimes.MOD_ID + ".slimeSieve", "Slime Sieve");
         add("container." + ResourcefulSlimes.MOD_ID + ".slimeLab", "Slime Lab");
+        add("gui." + ResourcefulSlimes.MOD_ID + ".resourceSlime", "Resource Slime");
         add("recipe." + ResourcefulSlimes.MOD_ID + ".sieving", "Sieving");
         add("recipe." + ResourcefulSlimes.MOD_ID + ".slime_creation", "Slime Creation");
         for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
