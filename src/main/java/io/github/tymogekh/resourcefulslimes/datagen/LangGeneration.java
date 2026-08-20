@@ -1,6 +1,7 @@
 package io.github.tymogekh.resourcefulslimes.datagen;
 
-import io.github.tymogekh.resourcefulslimes.ItemInit;
+import io.github.tymogekh.resourcefulslimes.init.BlockInit;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import net.minecraft.data.PackOutput;
@@ -22,11 +23,11 @@ public class LangGeneration extends LanguageProvider {
         add(ItemInit.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get(), "Random Resource Slime Spawn Egg");
         add(ItemInit.RESOURCE_SLIME_BUCKET.get(), "Resource Slime Bucket");
         add(ItemInit.SLIMEPEDIA.get(), "Slimepedia");
-        add(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get(), "Slime Feeder");
+        add(BlockInit.SLIME_FEEDER_BLOCK.get(), "Slime Feeder");
         add(ItemInit.SLIME_FEEDER_ITEM.get(), "Slime Feeder");
-        add(ResourcefulSlimes.SLIME_SIEVE_BLOCK.get(), "Slime Sieve");
+        add(BlockInit.SLIME_SIEVE_BLOCK.get(), "Slime Sieve");
         add(ItemInit.SLIME_SIEVE_ITEM.get(), "Slime Sieve");
-        add(ResourcefulSlimes.SLIME_LAB_BLOCK.get(), "Slime Lab");
+        add(BlockInit.SLIME_LAB_BLOCK.get(), "Slime Lab");
         add(ItemInit.SLIME_LAB_ITEM.get(), "Slime Lab");
         add("item_group.resourcefulslimes.tab", "Resourceful Slimes");
         add("container." + ResourcefulSlimes.MOD_ID + ".slimeFeeder", "Slime Feeder");

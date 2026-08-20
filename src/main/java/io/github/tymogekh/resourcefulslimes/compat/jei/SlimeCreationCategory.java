@@ -1,6 +1,6 @@
 package io.github.tymogekh.resourcefulslimes.compat.jei;
 
-import io.github.tymogekh.resourcefulslimes.ItemInit;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.SlimeCreation;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;

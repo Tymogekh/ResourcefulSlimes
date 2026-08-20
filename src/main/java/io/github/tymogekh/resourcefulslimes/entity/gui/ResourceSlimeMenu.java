@@ -2,6 +2,7 @@ package io.github.tymogekh.resourcefulslimes.entity.gui;
 
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
+import io.github.tymogekh.resourcefulslimes.init.MenuInit;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +17,7 @@ public class ResourceSlimeMenu extends AbstractContainerMenu {
     private final ResourceSlime slime;
 
     public ResourceSlimeMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf){
-        this(ResourcefulSlimes.RESOURCE_SLIME_MENU.get(), containerId, (ResourceSlime) inventory.player.level().getEntity(buf.readInt()));
+        this(MenuInit.RESOURCE_SLIME_MENU.get(), containerId, (ResourceSlime) inventory.player.level().getEntity(buf.readInt()));
     }
 
     public ResourceSlimeMenu(@Nullable MenuType<?> menuType, int containerId, ResourceSlime slime) {

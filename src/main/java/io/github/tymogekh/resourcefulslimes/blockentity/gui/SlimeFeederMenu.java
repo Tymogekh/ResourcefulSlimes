@@ -3,6 +3,8 @@ package io.github.tymogekh.resourcefulslimes.blockentity.gui;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.ModifiedSlot;
+import io.github.tymogekh.resourcefulslimes.init.BlockInit;
+import io.github.tymogekh.resourcefulslimes.init.MenuInit;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -21,7 +23,7 @@ public class SlimeFeederMenu extends AbstractContainerMenu {
     }
 
     public SlimeFeederMenu(int containerId, Inventory inventory, BlockEntity blockEntity) {
-        super(ResourcefulSlimes.SLIME_FEEDER_MENU.get(), containerId);
+        super(MenuInit.SLIME_FEEDER_MENU.get(), containerId);
         this.blockEntity = (SlimeFeederBlockEntity) blockEntity;
         addSlot(new ModifiedSlot(this.blockEntity, 0, 62, 31, stack -> stack.get(DataComponents.FOOD) != null));
         for(int column = 0; column < 3; column++){
@@ -56,7 +58,7 @@ public class SlimeFeederMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return stillValid(ContainerLevelAccess.NULL, player, ResourcefulSlimes.SLIME_FEEDER_BLOCK.get());
+        return stillValid(ContainerLevelAccess.NULL, player, BlockInit.SLIME_FEEDER_BLOCK.get());
     }
 
     public int getNutrition(){

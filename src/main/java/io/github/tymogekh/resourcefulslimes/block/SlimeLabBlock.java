@@ -1,8 +1,8 @@
 package io.github.tymogekh.resourcefulslimes.block;
 
 import com.mojang.serialization.MapCodec;
-import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeLabBlockEntity;
+import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
@@ -71,6 +71,6 @@ public class SlimeLabBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<T> type) {
-        return type == ResourcefulSlimes.SLIME_LAB_BLOCK_ENTITY.get()  && !level.isClientSide() ? SlimeLabBlockEntity::tick : null;
+        return type == BlockEntityInit.SLIME_LAB_BLOCK_ENTITY.get()  && !level.isClientSide() ? SlimeLabBlockEntity::tick : null;
     }
 }

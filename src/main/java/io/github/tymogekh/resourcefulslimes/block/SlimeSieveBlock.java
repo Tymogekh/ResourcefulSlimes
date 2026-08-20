@@ -1,8 +1,8 @@
 package io.github.tymogekh.resourcefulslimes.block;
 
 import com.mojang.serialization.MapCodec;
-import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeSieveBlockEntity;
+import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -46,7 +46,7 @@ public class SlimeSieveBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
-        return blockEntityType == ResourcefulSlimes.SLIME_SIEVE_ENTITY.get() && !level.isClientSide() ? SlimeSieveBlockEntity::tick : null;
+        return blockEntityType == BlockEntityInit.SLIME_SIEVE_ENTITY.get() && !level.isClientSide() ? SlimeSieveBlockEntity::tick : null;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.github.tymogekh.resourcefulslimes.datagen;
 
-import io.github.tymogekh.resourcefulslimes.ItemInit;
+import io.github.tymogekh.resourcefulslimes.init.BlockInit;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
@@ -28,23 +29,23 @@ public class ModelGenerator extends ModelProvider {
     @Override
     protected void registerModels(@NotNull BlockModelGenerators blockModels, @NotNull ItemModelGenerators itemModels) {
         blockModels.blockStateOutput.accept(
-                MultiVariantGenerator.dispatch(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get())
+                MultiVariantGenerator.dispatch(BlockInit.SLIME_FEEDER_BLOCK.get())
                         .with(PropertyDispatch.initial(SlimeFeederBlock.FILLED)
                                 .select(false, BlockModelGenerators.plainVariant(TexturedModel.CUBE_TOP_BOTTOM
                                         .updateTexture(mapping -> mapping.put(TextureSlot.TOP, new Material(mcLocation("block/oak_planks")))
                                                 .put(TextureSlot.SIDE, new Material(modLocation("block/slime_feeder")))
                                                 .put(TextureSlot.BOTTOM, new Material(mcLocation("block/cobblestone"))))
-                                        .create(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get(), blockModels.modelOutput)))
+                                        .create(BlockInit.SLIME_FEEDER_BLOCK.get(), blockModels.modelOutput)))
                                 .select(true, BlockModelGenerators.plainVariant(TexturedModel.CUBE_TOP_BOTTOM
                                         .updateTexture(mapping -> mapping.put(TextureSlot.TOP, new Material(mcLocation("block/oak_planks")))
                                                 .put(TextureSlot.SIDE, new Material(modLocation("block/slime_feeder_filled")))
                                                 .put(TextureSlot.BOTTOM, new Material(mcLocation("block/cobblestone"))))
-                                        .createWithSuffix(ResourcefulSlimes.SLIME_FEEDER_BLOCK.get(), "_filled", blockModels.modelOutput)))));
-        blockModels.createTrivialBlock(ResourcefulSlimes.SLIME_SIEVE_BLOCK.get(), TexturedModel.CUBE_TOP_BOTTOM.updateTexture(mapping ->
+                                        .createWithSuffix(BlockInit.SLIME_FEEDER_BLOCK.get(), "_filled", blockModels.modelOutput)))));
+        blockModels.createTrivialBlock(BlockInit.SLIME_SIEVE_BLOCK.get(), TexturedModel.CUBE_TOP_BOTTOM.updateTexture(mapping ->
                 mapping.put(TextureSlot.SIDE, new Material(modLocation("block/slime_sieve")))
                     .put(TextureSlot.TOP, new Material(modLocation("block/slime_sieve_top")))
                     .put(TextureSlot.BOTTOM, new Material(mcLocation("block/cobblestone")))));
-        blockModels.createHorizontallyRotatedBlock(ResourcefulSlimes.SLIME_LAB_BLOCK.get(), TexturedModel.ORIENTABLE.updateTexture(mapping ->
+        blockModels.createHorizontallyRotatedBlock(BlockInit.SLIME_LAB_BLOCK.get(), TexturedModel.ORIENTABLE.updateTexture(mapping ->
                 mapping.put(TextureSlot.FRONT, new Material(modLocation("block/slime_lab_front")))
                         .put(TextureSlot.SIDE, new Material(modLocation("block/slime_lab_side")))
                         .put(TextureSlot.TOP, new Material(mcLocation("block/copper_block")))

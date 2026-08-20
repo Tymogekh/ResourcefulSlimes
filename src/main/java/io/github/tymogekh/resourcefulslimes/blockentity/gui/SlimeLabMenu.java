@@ -4,6 +4,8 @@ import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeLabBlockEntity;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.ModifiedSlot;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
+import io.github.tymogekh.resourcefulslimes.init.BlockInit;
+import io.github.tymogekh.resourcefulslimes.init.MenuInit;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,7 +26,7 @@ public class SlimeLabMenu extends AbstractContainerMenu {
     }
 
     public SlimeLabMenu(int containerId, Inventory inventory, BlockEntity blockEntity) {
-        super(ResourcefulSlimes.SLIME_LAB_MENU.get(), containerId);
+        super(MenuInit.SLIME_LAB_MENU.get(), containerId);
         this.blockEntity = (SlimeLabBlockEntity) blockEntity;
         Level level = inventory.player.level();
         for (int slotIndex = 0; slotIndex < 3; slotIndex++) {
@@ -63,7 +65,7 @@ public class SlimeLabMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return stillValid(ContainerLevelAccess.NULL, player, ResourcefulSlimes.SLIME_LAB_BLOCK.get());
+        return stillValid(ContainerLevelAccess.NULL, player, BlockInit.SLIME_LAB_BLOCK.get());
     }
 
     public ResourceSlime.Variant getResourceSlimeVariant() {

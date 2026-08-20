@@ -4,6 +4,7 @@ import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeSieveMenu;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.Sieving;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.MultiHandlerWithCheck;
+import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -41,7 +42,7 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
     private int cooldown = 0;
 
     public SlimeSieveBlockEntity(BlockPos p_155077_, BlockState p_155078_) {
-        super(ResourcefulSlimes.SLIME_SIEVE_ENTITY.get(), p_155077_, p_155078_);
+        super(BlockEntityInit.SLIME_SIEVE_ENTITY.get(), p_155077_, p_155078_);
         this.items = NonNullList.withSize(2, ItemStack.EMPTY);
         this.handler = new MultiHandlerWithCheck(this.items, stack -> this.level != null && !this.level.isClientSide() &&
                 ((ServerLevel) this.level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SIEVING_RECIPE.get()).stream().anyMatch(rec -> rec.value().getIngredient().test(stack.toStack())));
