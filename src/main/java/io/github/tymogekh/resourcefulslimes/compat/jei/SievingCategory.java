@@ -2,6 +2,7 @@ package io.github.tymogekh.resourcefulslimes.compat.jei;
 
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.Sieving;
+import io.github.tymogekh.resourcefulslimes.init.BlockInit;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -29,7 +30,7 @@ public class SievingCategory implements IRecipeCategory<Sieving> {
     private final IGuiHelper helper;
 
     public SievingCategory(IGuiHelper helper) {
-        this.icon = helper.createDrawableItemLike(ResourcefulSlimes.SLIME_SIEVE_BLOCK);
+        this.icon = helper.createDrawableItemLike(BlockInit.SLIME_SIEVE_BLOCK);
         this.progress_sprite = helper.drawableBuilder(Identifier.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "textures/gui/sprites/container/slime_sieve/sieving_progress.png"),
                 0, 0, 21, 17).setTextureSize(21, 17).build();
         this.helper = helper;

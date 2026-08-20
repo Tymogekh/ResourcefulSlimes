@@ -1,5 +1,6 @@
-package io.github.tymogekh.resourcefulslimes;
+package io.github.tymogekh.resourcefulslimes.event;
 
+import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederScreen;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeLabScreen;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeSieveScreen;
@@ -8,6 +9,8 @@ import io.github.tymogekh.resourcefulslimes.datagen.*;
 import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeScreen;
 import io.github.tymogekh.resourcefulslimes.entity.particle.ItemColoredParticle;
 import io.github.tymogekh.resourcefulslimes.entity.renderer.ResourceSlimeRenderer;
+import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
+import io.github.tymogekh.resourcefulslimes.init.MenuInit;
 import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -33,10 +36,10 @@ public class Events {
 
     @SubscribeEvent
     private static void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(ResourcefulSlimes.SLIME_FEEDER_MENU.get(), SlimeFeederScreen::new);
-        event.register(ResourcefulSlimes.SLIME_SIEVE_MENU.get(), SlimeSieveScreen::new);
-        event.register(ResourcefulSlimes.RESOURCE_SLIME_MENU.get(), ResourceSlimeScreen::new);
-        event.register(ResourcefulSlimes.SLIME_LAB_MENU.get(), SlimeLabScreen::new);
+        event.register(MenuInit.SLIME_FEEDER_MENU.get(), SlimeFeederScreen::new);
+        event.register(MenuInit.SLIME_SIEVE_MENU.get(), SlimeSieveScreen::new);
+        event.register(MenuInit.RESOURCE_SLIME_MENU.get(), ResourceSlimeScreen::new);
+        event.register(MenuInit.SLIME_LAB_MENU.get(), SlimeLabScreen::new);
     }
 
     @SubscribeEvent
@@ -63,9 +66,9 @@ public class Events {
 
     @SubscribeEvent
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ResourcefulSlimes.SLIME_FEEDER_ENTITY.get(), (blockEntity, _) -> blockEntity.getHandler());
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ResourcefulSlimes.SLIME_SIEVE_ENTITY.get(), (blockEntity, _) -> blockEntity.getHandler());
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ResourcefulSlimes.SLIME_LAB_BLOCK_ENTITY.get(), (blockEntity, _) -> blockEntity.getHandler());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, BlockEntityInit.SLIME_FEEDER_ENTITY.get(), (blockEntity, _) -> blockEntity.getHandler());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, BlockEntityInit.SLIME_SIEVE_ENTITY.get(), (blockEntity, _) -> blockEntity.getHandler());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, BlockEntityInit.SLIME_LAB_BLOCK_ENTITY.get(), (blockEntity, _) -> blockEntity.getHandler());
     }
 
     @SubscribeEvent

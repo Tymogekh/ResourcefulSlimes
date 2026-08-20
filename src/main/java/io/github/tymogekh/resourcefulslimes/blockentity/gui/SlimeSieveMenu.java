@@ -3,6 +3,8 @@ package io.github.tymogekh.resourcefulslimes.blockentity.gui;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeSieveBlockEntity;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.ModifiedSlot;
+import io.github.tymogekh.resourcefulslimes.init.BlockInit;
+import io.github.tymogekh.resourcefulslimes.init.MenuInit;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,7 +26,7 @@ public class SlimeSieveMenu extends AbstractContainerMenu {
     }
 
     public SlimeSieveMenu(int containerId, Inventory inventory, BlockEntity blockEntity) {
-        super(ResourcefulSlimes.SLIME_SIEVE_MENU.get(), containerId);
+        super(MenuInit.SLIME_SIEVE_MENU.get(), containerId);
         this.blockEntity = (SlimeSieveBlockEntity) blockEntity;
         Level level = inventory.player.level();
         addSlot(new ModifiedSlot(this.blockEntity, 0, 55, 35,
@@ -62,7 +64,7 @@ public class SlimeSieveMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return stillValid(ContainerLevelAccess.NULL, player, ResourcefulSlimes.SLIME_SIEVE_BLOCK.get());
+        return stillValid(ContainerLevelAccess.NULL, player, BlockInit.SLIME_SIEVE_BLOCK.get());
     }
 
     public int getSievingProgress() {

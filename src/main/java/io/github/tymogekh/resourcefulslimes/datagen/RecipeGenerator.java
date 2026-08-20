@@ -1,6 +1,6 @@
 package io.github.tymogekh.resourcefulslimes.datagen;
 
-import io.github.tymogekh.resourcefulslimes.ItemInit;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.Sieving;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.SlimeCreation;

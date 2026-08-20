@@ -5,6 +5,7 @@ import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeFeederMenu;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.SingleHandlerWithCheck;
 import io.github.tymogekh.resourcefulslimes.config.Config;
+import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -38,7 +39,7 @@ public class SlimeFeederBlockEntity extends BaseContainerBlockEntity {
     private int nutrition;
 
     public SlimeFeederBlockEntity(BlockPos pos, BlockState blockState) {
-        super(ResourcefulSlimes.SLIME_FEEDER_ENTITY.get(), pos, blockState);
+        super(BlockEntityInit.SLIME_FEEDER_ENTITY.get(), pos, blockState);
         this.items = NonNullList.withSize(1, ItemStack.EMPTY);
         this.handler = new SingleHandlerWithCheck(this.items.getFirst(), resource -> resource.has(DataComponents.FOOD));
     }

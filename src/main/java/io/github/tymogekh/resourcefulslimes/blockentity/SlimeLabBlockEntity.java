@@ -6,6 +6,7 @@ import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeLabMenu;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.SlimeCreation;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.MultiHandlerWithCheck;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
+import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -41,7 +42,7 @@ public class SlimeLabBlockEntity extends BaseContainerBlockEntity {
     private int cooldown = 0;
 
     public SlimeLabBlockEntity(BlockPos worldPosition, BlockState blockState) {
-        super(ResourcefulSlimes.SLIME_LAB_BLOCK_ENTITY.get(), worldPosition, blockState);
+        super(BlockEntityInit.SLIME_LAB_BLOCK_ENTITY.get(), worldPosition, blockState);
         this.items = NonNullList.withSize(3, ItemStack.EMPTY);
         this.handler = new MultiHandlerWithCheck(this.items, itemResource -> this.level != null && !this.level.isClientSide() &&
                 ((ServerLevel) this.level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SLIME_CREATION_RECIPE.get()).stream().anyMatch(recipe -> recipe.value().getIngredients().stream().anyMatch(ingredient -> itemResource.is(ingredient.ingredient().getValues()))));

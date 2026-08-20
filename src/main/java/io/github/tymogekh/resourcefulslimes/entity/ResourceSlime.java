@@ -1,12 +1,13 @@
 package io.github.tymogekh.resourcefulslimes.entity;
 
-import io.github.tymogekh.resourcefulslimes.ItemInit;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeFeederBlockEntity;
 import io.github.tymogekh.resourcefulslimes.config.Config;
 import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeMenu;
 import io.github.tymogekh.resourcefulslimes.entity.particle.ItemColoredParticleOption;
+import io.github.tymogekh.resourcefulslimes.init.MenuInit;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -390,7 +391,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
-        return new ResourceSlimeMenu(ResourcefulSlimes.RESOURCE_SLIME_MENU.get(), i, this);
+        return new ResourceSlimeMenu(MenuInit.RESOURCE_SLIME_MENU.get(), i, this);
     }
 
     public enum Variant implements StringRepresentable {
