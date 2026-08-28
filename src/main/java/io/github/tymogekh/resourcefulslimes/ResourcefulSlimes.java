@@ -20,7 +20,6 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -138,13 +137,13 @@ public class ResourcefulSlimes {
                     CompoundTag tag = customData.copyTag();
                     if (tag.contains("variant")) {
                         tag.read("variant", Identifier.CODEC).ifPresent(identifier ->
-                                event.getToolTip().addLast(Component.literal("Variant: " + SlimeUtils.capitalizeAll(identifier.getPath(), "_")).withColor(TextColor.GRAY)
+                                event.getToolTip().addLast(Component.literal("Variant: " + SlimeUtils.capitalizeAll(identifier.getPath(), "_")).withColor(11184810)
                         ));
                     }
                 }
             } else if (eventStack.is(ItemInit.RESOURCE_SLIME_BALL.get())) {
                 String variantName = Objects.requireNonNull(eventStack.get(RESOURCE_SLIME_VARIANT.get())).name();
-                event.getToolTip().addLast(Component.literal("Variant: " + SlimeUtils.capitalizeAll(variantName, "_")).withColor(TextColor.GRAY));
+                event.getToolTip().addLast(Component.literal("Variant: " + SlimeUtils.capitalizeAll(variantName, "_")).withColor(11184810));
             }
         }
     }

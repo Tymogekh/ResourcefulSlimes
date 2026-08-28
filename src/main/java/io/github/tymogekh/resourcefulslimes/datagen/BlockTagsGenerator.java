@@ -18,12 +18,12 @@ public class BlockTagsGenerator extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
         tag(BlockTags.MINEABLE_WITH_AXE)
-                .add(BlockInit.SLIME_FEEDER_BLOCK.getKey())
-                .add(BlockInit.SLIME_SIEVE_BLOCK.getKey());
+                .add(BlockInit.SLIME_FEEDER_BLOCK.get())
+                .add(BlockInit.SLIME_SIEVE_BLOCK.get());
 
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(BlockInit.SLIME_FEEDER_BLOCK.getKey())
-                .add(BlockInit.SLIME_SIEVE_BLOCK.getKey())
-                .add(BlockInit.SLIME_LAB_BLOCK.getKey());
+                .add(BlockInit.SLIME_FEEDER_BLOCK.get())
+                .add(BlockInit.SLIME_SIEVE_BLOCK.get())
+                .add(BlockInit.SLIME_LAB_BLOCK.get());
     }
 }

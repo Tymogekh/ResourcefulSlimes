@@ -37,10 +37,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.Bucketable;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.cubemob.AbstractCubeMob;
-import net.minecraft.world.entity.monster.cubemob.Slime;
+import net.minecraft.world.entity.animal.Bucketable;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.variant.VariantUtils;
@@ -124,10 +123,10 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new AbstractCubeMob.CubeMobFloatGoal(this));
+        this.goalSelector.addGoal(1, new Slime.SlimeFloatGoal(this));
         this.goalSelector.addGoal(2, new ResourceSlimeFeederGoal(this));
-        this.goalSelector.addGoal(3, new AbstractCubeMob.CubeMobRandomDirectionGoal(this));
-        this.goalSelector.addGoal(5, new AbstractCubeMob.CubeMobKeepOnJumpingGoal(this));
+        this.goalSelector.addGoal(3, new Slime.SlimeRandomDirectionGoal(this));
+        this.goalSelector.addGoal(5, new Slime.SlimeKeepOnJumpingGoal(this));
     }
 
     public void setVariant(Holder<Variant> variant){
@@ -474,7 +473,7 @@ public class ResourceSlime extends Slime implements Bucketable, HasCustomInvento
             --this.giveUpTimer;
             if(this.nearestFeederPos != null && this.feeder != null && this.feeder.getNutrition() > 0) {
                 this.slime.lookAt(EntityAnchorArgument.Anchor.FEET, new Vec3(this.nearestFeederPos).add(0.5F, 1.0F, 0.5F));
-                ((AbstractCubeMob.CubeMobMoveControl<?>) this.slime.moveControl).setDirection(this.slime.getYRot(), this.slime.isDealsDamage());
+                ((Slime.SlimeMoveControl) this.slime.moveControl).setDirection(this.slime.getYRot(), this.slime.isDealsDamage());
                 if (this.feeder != null && this.slime.blockPosition().closerThan(this.nearestFeederPos, 2)) {
                     int slimeHunger = Config.MAX_SATURATION.get() - this.slime.entityData.get(SATURATION);
                     if (this.feeder.getNutrition() - slimeHunger > 0) {

@@ -5,7 +5,7 @@ import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.Sieving;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.SlimeCreation;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
-import net.minecraft.advancements.triggers.Criterion;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;

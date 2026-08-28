@@ -10,19 +10,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class ItemTagGeneration extends ItemTagsProvider {
+public class ItemTagGenerator extends ItemTagsProvider {
 
-
-    public ItemTagGeneration(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+    public ItemTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super(output, lookupProvider, ResourcefulSlimes.MOD_ID);
     }
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
         tag(Tags.Items.SLIME_BALLS)
-                .add(ItemInit.RESOURCE_SLIME_BALL.getKey());
-
-        tag(Tags.Items.BUCKETS_ENTITY_DRY)
-                .add(ItemInit.RESOURCE_SLIME_BUCKET.getKey());
+                .add(ItemInit.RESOURCE_SLIME_BALL.get());
     }
 }

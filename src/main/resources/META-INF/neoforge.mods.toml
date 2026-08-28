@@ -31,7 +31,7 @@ license="GNU General Public License"
     #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
 
     # A file name (in the root of the mod JAR) containing a logo for display
-    bannerFile="banner.png" #optional
+    logoFile= "logo.png" #optional
     iconFile="icon.png"
 
     # A text field displayed in the mod UI

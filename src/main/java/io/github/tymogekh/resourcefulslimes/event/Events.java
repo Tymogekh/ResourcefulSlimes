@@ -63,7 +63,7 @@ public class Events {
         event.addProvider(new ModelGenerator(output));
         event.addProvider(new LangGeneration(output, "en_us"));
         event.addProvider(new BlockTagsGenerator(output, provider));
-        event.addProvider(new ItemTagGeneration(output, provider));
+        event.addProvider(new ItemTagGenerator(output, provider));
         event.addProvider(new LootTableProvider(output, Collections.emptySet(),
                 List.of(new LootTableProvider.SubProviderEntry(EntityLootTableGenerator::new, LootContextParamSets.ENTITY), new LootTableProvider.SubProviderEntry(BlockLootTableGenerator::new, LootContextParamSets.BLOCK)), provider));
         event.addProvider(new RecipeGenerator.Runner(output, provider));
