@@ -1,6 +1,5 @@
 package io.github.tymogekh.resourcefulslimes.entity.gui;
 
-import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.init.MenuInit;
 import net.minecraft.network.RegistryFriendlyByteBuf;

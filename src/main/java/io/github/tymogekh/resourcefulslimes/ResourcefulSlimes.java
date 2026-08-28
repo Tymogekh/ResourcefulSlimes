@@ -10,13 +10,18 @@ import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
 import io.github.tymogekh.resourcefulslimes.init.BlockInit;
 import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import io.github.tymogekh.resourcefulslimes.init.MenuInit;
-import net.minecraft.core.component.DataComponentMap;
+import io.github.tymogekh.resourcefulslimes.util.SlimeUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
@@ -35,7 +40,10 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 
 @Mod(ResourcefulSlimes.MOD_ID)
@@ -49,11 +57,16 @@ public class ResourcefulSlimes {
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, MOD_ID);
     public static final DeferredRegister<RecipeDisplay.Type<?>> RECIPE_DISPLAYS = DeferredRegister.create(Registries.RECIPE_DISPLAY, MOD_ID);
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, MOD_ID);
-    public static final DeferredRegister<DataComponentType<?>> COMPONENT_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MOD_ID);
+    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MOD_ID);
+    public static final DeferredRegister<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, MOD_ID);
 
     public static final DeferredHolder<EntityType<?>, @NotNull EntityType<@NotNull ResourceSlime>> RESOURCE_SLIME = ENTITY_TYPES.register("resource_slime",
             () -> EntityType.Builder.of(ResourceSlime::new, MobCategory.CREATURE).sized(0.52F, 0.52F).eyeHeight(0.325F)
                     .spawnDimensionsScale(4.0F).clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(MOD_ID, "resource_slime"))));
+
+    public static final DeferredHolder<DataComponentType<?>, @NotNull DataComponentType<ResourceSlime.Variant>> RESOURCE_SLIME_VARIANT = DATA_COMPONENT_TYPES.register("resource_slime_variant", () -> DataComponentType.<ResourceSlime.Variant>builder().persistent(ResourceSlime.Variant.CODEC).build());
+
+    public static final DeferredHolder<EntityDataSerializer<?>, @NotNull EntityDataSerializer<Holder<ResourceSlime.Variant>>> RESOURCE_SLIME_VARIANT_SERIALIZER = ENTITY_DATA_SERIALIZERS.register("resource_slime_variant", () -> EntityDataSerializer.forValueType(ResourceSlime.Variant.STREAM_CODEC));
 
     public static final DeferredHolder<RecipeBookCategory, @NotNull RecipeBookCategory> SIEVING_CATEGORY = RECIPE_BOOK_CATEGORIES.register("sieving_misc", RecipeBookCategory::new);
     public static final DeferredHolder<RecipeType<?>, @NotNull RecipeType<@NotNull Sieving>> SIEVING_RECIPE = RECIPE_TYPES.register("sieving", _ -> RecipeType.simple(Identifier.fromNamespaceAndPath(MOD_ID, "sieving")));
@@ -74,30 +87,34 @@ public class ResourcefulSlimes {
             .title(Component.translatable("item_group." + MOD_ID + ".tab"))
             .icon(() -> ItemInit.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get().getDefaultInstance())
             .displayItems(((itemDisplayParameters, output) -> {
+                Registry<ResourceSlime.Variant> registry = Objects.requireNonNull(Minecraft.getInstance().getConnection()).registryAccess().lookupOrThrow(ResourceSlime.Variant.REGISTRY_KEY);
                 output.accept(ItemInit.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get());
                 output.accept(ItemInit.SLIME_FEEDER_ITEM.get());
                 output.accept(ItemInit.SLIME_SIEVE_ITEM.get());
                 output.accept(ItemInit.SLIME_LAB_ITEM.get());
                 output.accept(ItemInit.SLIMEPEDIA.get());
-                for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
-                    CompoundTag tag = new CompoundTag();
-                    tag.putInt("Variant", variant.getId());
-                    ItemStack stack = new ItemStack(ItemInit.RESOURCE_SLIME_BUCKET.asItem());
-                    stack.applyComponents(DataComponentMap.builder().set(DataComponents.BUCKET_ENTITY_DATA, CustomData.of(tag)).build());
-                    output.accept(stack);
-                }
-                for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
-                    output.accept(variant.getDropItem());
-                }
-                for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
-                    if(variant.isModded()) {
-                        output.accept(variant.getIngotOrGem());
+                registry.keySet().forEach(variantIdentifier -> {
+                    if (!variantIdentifier.equals(ResourceSlime.Variant.EMPTY.identifier())) {
+                        CompoundTag tag = new CompoundTag();
+                        tag.store("variant", Identifier.CODEC, variantIdentifier);
+                        ItemStack stack = ItemInit.RESOURCE_SLIME_BUCKET.asItem().getDefaultInstance();
+                        stack.set(DataComponents.BUCKET_ENTITY_DATA, CustomData.of(tag));
+                        output.accept(stack);
                     }
-                }
+                });
+                registry.stream().forEach(variant -> {
+                    if (!variant.name().equals("empty")) {
+                        ItemStack slimeball = ItemInit.RESOURCE_SLIME_BALL.get().getDefaultInstance();
+                        slimeball.set(RESOURCE_SLIME_VARIANT.get(), variant);
+                        output.accept(slimeball);
+                    }
+                });
             })).build());
 
     public ResourcefulSlimes(IEventBus bus, ModContainer container){
         container.registerConfig(ModConfig.Type.COMMON, Config.SPEC, MOD_ID + "-common.toml");
+        DATA_COMPONENT_TYPES.register(bus);
+        ENTITY_DATA_SERIALIZERS.register(bus);
         BlockInit.BLOCKS.register(bus);
         MenuInit.MENUS.register(bus);
         BlockEntityInit.BLOCK_ENTITY_TYPES.register(bus);
@@ -113,13 +130,21 @@ public class ResourcefulSlimes {
     }
 
     private void tooltipEvent(ItemTooltipEvent event) {
-        if (event.getItemStack().is(ItemInit.RESOURCE_SLIME_BUCKET) && event.getEntity() != null) {
-            CustomData customData = event.getItemStack().get(DataComponents.BUCKET_ENTITY_DATA);
-            if (customData != null) {
-                CompoundTag tag = customData.copyTag();
-                if (tag.contains("Variant") && tag.getByte("Variant").isPresent()) {
-                    event.getToolTip().addLast(ResourceSlime.Variant.byId(tag.getByte("Variant").get()).getDisplayName());
+        if (event.getEntity() != null) {
+            ItemStack eventStack = event.getItemStack();
+            if (eventStack.is(ItemInit.RESOURCE_SLIME_BUCKET)) {
+                CustomData customData = eventStack.get(DataComponents.BUCKET_ENTITY_DATA);
+                if (customData != null) {
+                    CompoundTag tag = customData.copyTag();
+                    if (tag.contains("variant")) {
+                        tag.read("variant", Identifier.CODEC).ifPresent(identifier ->
+                                event.getToolTip().addLast(Component.literal("Variant: " + SlimeUtils.capitalizeAll(identifier.getPath(), "_")).withColor(TextColor.GRAY)
+                        ));
+                    }
                 }
+            } else if (eventStack.is(ItemInit.RESOURCE_SLIME_BALL.get())) {
+                String variantName = Objects.requireNonNull(eventStack.get(RESOURCE_SLIME_VARIANT.get())).name();
+                event.getToolTip().addLast(Component.literal("Variant: " + SlimeUtils.capitalizeAll(variantName, "_")).withColor(TextColor.GRAY));
             }
         }
     }

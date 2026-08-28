@@ -8,11 +8,7 @@
     {
       "count": 64,
       "ingredient": "minecraft:amethyst_shard"
-    },
-    {
-      "count": 32,
-      "ingredient": "resourcefulslimes:lapis_slime_ball"
     }
   ],
-  "output_variant": "amethyst"
+  "output_variant": "resourcefulslimes:amethyst"
 }

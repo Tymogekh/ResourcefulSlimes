@@ -3,6 +3,7 @@ package io.github.tymogekh.resourcefulslimes.compat.jei;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.Sieving;
 import io.github.tymogekh.resourcefulslimes.init.BlockInit;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -18,6 +19,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
@@ -77,7 +79,9 @@ public class SievingCategory implements IRecipeCategory<Sieving> {
 
     @Override
     public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull Sieving recipe, @NotNull IFocusGroup focuses) {
-        builder.addInputSlot(55, 35).addItemStacks(List.of(recipe.getIngredient().getValues().get(0).value().getDefaultInstance()));
+        ItemStack input = ItemInit.RESOURCE_SLIME_BALL.get().getDefaultInstance();
+        input.set(ResourcefulSlimes.RESOURCE_SLIME_VARIANT.get(), recipe.getVariant());
+        builder.addInputSlot(55, 35).addItemStacks(List.of(input));
         builder.addOutputSlot(116, 35).addItemStacks(List.of(recipe.getResult().create().copy()));
     }
 }

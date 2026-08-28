@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.*;
@@ -44,7 +45,7 @@ public class SlimeLabScreen extends AbstractContainerScreen<@NotNull SlimeLabMen
         return this.menu;
     }
 
-    public static @Nullable LivingEntity getDisplayEntity(Level level, ResourceSlime.Variant variant) {
+    public static @Nullable LivingEntity getDisplayEntity(Level level, Holder<ResourceSlime.Variant> variant) {
         if (variant == null) {
             return null;
         }

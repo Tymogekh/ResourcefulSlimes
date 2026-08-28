@@ -1,6 +1,7 @@
 package io.github.tymogekh.resourcefulslimes.entity.gui;
 
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
+import io.github.tymogekh.resourcefulslimes.util.SlimeUtils;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -25,7 +26,7 @@ public class ResourceSlimeScreen extends BookViewScreen implements MenuAccess<@N
         ResourceSlime slime = this.getMenu().getSlime();
         int marginLeft = this.width / 2 - 50;
         InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, marginLeft, this.height / 2 - 100, this.width / 2 + 50, this.height / 2 - 35, 17, 0.25F, mouseX, mouseY, slime);
-        graphics.text(this.getFont(), slime.getVariant().getDisplayName().getString(), marginLeft, this.height / 2 - 20, 0xFF4a4a4a, false);
+        graphics.text(this.getFont(), "Variant: " + SlimeUtils.capitalizeAll(slime.getVariant().value().name(), "_"), marginLeft, this.height / 2 - 20, 0xFF4a4a4a, false);
         graphics.text(this.getFont(), "Saturation: " + slime.getEntityData().get(ResourceSlime.SATURATION), marginLeft, this.height / 2 - 10, 0xFF4a4a4a, false);
         graphics.text(this.getFont(), "Growth: " + slime.getEntityData().get(ResourceSlime.GROWTH), marginLeft, this.height / 2, 0xFF4a4a4a, false);
         graphics.text(this.getFont(), "Splitting: " + slime.getEntityData().get(ResourceSlime.SPLITTING), marginLeft, this.height / 2 + 10, 0xFF4a4a4a, false);

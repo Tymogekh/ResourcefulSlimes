@@ -10,5 +10,5 @@
       "ingredient": "minecraft:cobblestone"
     }
   ],
-  "output_variant": "cobblestone"
+  "output_variant": "resourcefulslimes:cobblestone"
 }

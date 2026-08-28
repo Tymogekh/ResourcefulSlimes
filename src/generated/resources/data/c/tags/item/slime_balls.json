@@ -1,25 +1,5 @@
 {
   "values": [
-    "minecraft:cobblestone",
-    "minecraft:iron_ingot",
-    "minecraft:gold_ingot",
-    "minecraft:copper_ingot",
-    "minecraft:netherite_scrap",
-    "minecraft:lapis_lazuli",
-    "minecraft:redstone",
-    "minecraft:emerald",
-    "minecraft:diamond",
-    "minecraft:quartz",
-    "minecraft:coal",
-    "minecraft:amethyst_shard",
-    "resourcefulslimes:nickel_ingot",
-    "resourcefulslimes:silver_ingot",
-    "resourcefulslimes:lead_ingot",
-    "resourcefulslimes:zinc_ingot",
-    "resourcefulslimes:uranium_ingot",
-    "resourcefulslimes:tin_ingot",
-    "resourcefulslimes:aluminium_ingot",
-    "resourcefulslimes:osmium_ingot",
-    "resourcefulslimes:certus_quartz"
+    "resourcefulslimes:resource_slime_ball"
   ]
 }

@@ -6,6 +6,7 @@ import io.github.tymogekh.resourcefulslimes.blockentity.slot.ModifiedSlot;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.init.BlockInit;
 import io.github.tymogekh.resourcefulslimes.init.MenuInit;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SlimeLabMenu extends AbstractContainerMenu {
     private final SlimeLabBlockEntity blockEntity;
@@ -68,7 +70,7 @@ public class SlimeLabMenu extends AbstractContainerMenu {
         return stillValid(ContainerLevelAccess.NULL, player, BlockInit.SLIME_LAB_BLOCK.get());
     }
 
-    public ResourceSlime.Variant getResourceSlimeVariant() {
+    public @Nullable Holder<ResourceSlime.Variant> getResourceSlimeVariant() {
         return this.blockEntity.getResourceSlimeVariant();
     }
 

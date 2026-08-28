@@ -1,30 +1,19 @@
 package io.github.tymogekh.resourcefulslimes.item;
 
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
-import net.minecraft.client.color.item.ItemTintSource;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.ARGB;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 
 public class ResourceSlimeBucket extends MobBucketItem {
@@ -39,7 +28,9 @@ public class ResourceSlimeBucket extends MobBucketItem {
             Player player = context.getPlayer();
             this.spawn((ServerLevel) context.getLevel(), context.getItemInHand(), context.getClickedPos());
             if (player != null) {
-                context.getItemInHand().shrink(1);
+                if (!player.isCreative()) {
+                    context.getItemInHand().shrink(1);
+                }
                 player.addItem(new ItemStack(Items.BUCKET));
                 player.swing(context.getHand());
             }
@@ -53,24 +44,6 @@ public class ResourceSlimeBucket extends MobBucketItem {
         if(slime != null) {
             slime.loadFromBucketTag(customdata.copyTag());
             slime.setFromBucket(true);
-        }
-    }
-
-    public record VariantTint(int defaultColor) implements ItemTintSource {
-
-        public static final MapCodec<VariantTint> MAP_CODEC = RecordCodecBuilder.mapCodec(variantTintInstance -> variantTintInstance.group(
-                ExtraCodecs.RGB_COLOR_CODEC.fieldOf("default").forGetter(VariantTint::defaultColor)).apply(variantTintInstance, VariantTint::new)
-        );
-
-        @Override
-        public int calculate(@NotNull ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity) {
-            CompoundTag tag = Objects.requireNonNull(itemStack.get(DataComponents.BUCKET_ENTITY_DATA)).copyTag();
-            return tag.contains("Variant") && tag.getByte("Variant").isPresent() ? ARGB.opaque(ResourceSlime.Variant.byId(tag.getByte("Variant").get()).getColor()) : ARGB.opaque(defaultColor);
-        }
-
-        @Override
-        public @NotNull MapCodec<? extends ItemTintSource> type() {
-            return MAP_CODEC;
         }
     }
 }

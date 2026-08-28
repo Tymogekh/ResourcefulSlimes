@@ -7,7 +7,7 @@
 # A version range to match for said mod loader - for regular FML @Mod it will be the FML version. This is currently 2.
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
-license="GNU Lesser General Public License"
+license="GNU General Public License"
 
 # A URL to refer people to when problems occur with this mod
 #issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
@@ -31,7 +31,8 @@ license="GNU Lesser General Public License"
     #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
 
     # A file name (in the root of the mod JAR) containing a logo for display
-    logoFile= "logo.png" #optional
+    bannerFile="banner.png" #optional
+    iconFile="icon.png"
 
     # A text field displayed in the mod UI
     #credits="" #optional

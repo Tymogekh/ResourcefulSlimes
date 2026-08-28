@@ -1,7 +1,7 @@
 {
   "type": "resourcefulslimes:sieving",
   "chance": 1.0,
-  "ingredient": "resourcefulslimes:cobblestone_slime_ball",
+  "required_variant": "resourcefulslimes:cobblestone",
   "result": {
     "id": "minecraft:cobblestone"
   },

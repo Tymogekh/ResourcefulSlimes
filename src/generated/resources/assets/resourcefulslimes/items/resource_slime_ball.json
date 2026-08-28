@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "resourcefulslimes:item/resource_slime_ball"
+    "model": "resourcefulslimes:item/resource_slime_ball",
+    "tints": [
+      {
+        "type": "resourcefulslimes:resource_slime_ball",
+        "default": -1
+      }
+    ]
   }
 }

@@ -1,11 +1,3 @@
-// 26.2	2026-06-22T00:00:21.6053789	Tags for minecraft:item mod id resourcefulslimes
-bddce2f6135c85237908aa4f23b360923051dc36 data/c/tags/item/gems/certus_quartz.json
-7f7258f3d9a43e49e614c565947d99a0bbbf905f data/c/tags/item/ingots/aluminium.json
-17682621589c1becfed5dab8c4d04f8075d73041 data/c/tags/item/ingots/lead.json
-a4d1ae6cf2602914a8ff3ae844f47df098c152e9 data/c/tags/item/ingots/nickel.json
-921ac025433d3f719ab5435826baeaeb486c6d43 data/c/tags/item/ingots/osmium.json
-d29cf6219204b7c57f27500fd2c01d0153b73d52 data/c/tags/item/ingots/silver.json
-2f7644f96955ce06059e3038e748535fc72cb6e5 data/c/tags/item/ingots/tin.json
-8858d2d0865a76f37ad2ada0ee44190951b479f7 data/c/tags/item/ingots/uranium.json
-01d5b22a8dd824ac9c653128694ae9816581882d data/c/tags/item/ingots/zinc.json
-cb17873d9b13d8621bf052c4a61f11eccc04a017 data/c/tags/item/slime_balls.json
+// 26.2	2026-08-21T21:10:30.1881155	Tags for minecraft:item mod id resourcefulslimes
+29c0bbdfbf9910f9e78ceeb74871d86a92979c11 data/c/tags/item/buckets/entity_dry.json
+16d5a7a94f84c612ac14ad6c559729928eaf9da1 data/c/tags/item/slime_balls.json

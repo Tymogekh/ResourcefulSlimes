@@ -1,7 +1,7 @@
 {
   "type": "resourcefulslimes:sieving",
   "chance": 0.5,
-  "ingredient": "resourcefulslimes:gold_slime_ball",
+  "required_variant": "resourcefulslimes:gold",
   "result": {
     "id": "minecraft:gold_ingot"
   },

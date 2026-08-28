@@ -1,7 +1,7 @@
 {
   "type": "resourcefulslimes:sieving",
   "chance": 0.5,
-  "ingredient": "resourcefulslimes:lapis_slime_ball",
+  "required_variant": "resourcefulslimes:lapis",
   "result": {
     "id": "minecraft:lapis_lazuli"
   },

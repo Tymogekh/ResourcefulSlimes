@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
@@ -12,7 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ExtraCodecs;
+import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.CustomData;
@@ -27,18 +28,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SlimeCreation implements Recipe<SlimeCreation.@NotNull SlimeCreationInput> {
-    private PlacementInfo placementInfo;
-    private final List<SizedIngredient> ingredients;
-    private final ResourceSlime.Variant outputVariant;
     public static final MapCodec<SlimeCreation> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            ExtraCodecs.compactListCodec(SizedIngredient.NESTED_CODEC).fieldOf("ingredients").forGetter(SlimeCreation::getIngredients),
-            ResourceSlime.Variant.CODEC.fieldOf("output_variant").forGetter(SlimeCreation::getOutputVariant)
+            SizedIngredient.NESTED_CODEC.listOf().fieldOf("ingredients").forGetter(SlimeCreation::getIngredients),
+            RegistryFileCodec.create(ResourceSlime.Variant.REGISTRY_KEY, ResourceSlime.Variant.CODEC).fieldOf("output_variant").forGetter(SlimeCreation::getOutputVariantHolder)
     ).apply(inst, SlimeCreation::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, SlimeCreation> STREAM_CODEC = StreamCodec.composite(
-            SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), SlimeCreation::getIngredients, ResourceSlime.Variant.STREAM_CODEC, SlimeCreation::getOutputVariant, SlimeCreation::new
+            SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), SlimeCreation::getIngredients, ResourceSlime.Variant.STREAM_CODEC, SlimeCreation::getOutputVariantHolder, SlimeCreation::new
     );
+    private PlacementInfo placementInfo;
+    private final List<SizedIngredient> ingredients;
+    private final Holder<ResourceSlime.Variant> outputVariant;
 
-    public SlimeCreation(List<SizedIngredient> ingredients, ResourceSlime.Variant outputVariant) {
+    public SlimeCreation(List<SizedIngredient> ingredients, Holder<ResourceSlime.Variant> outputVariant) {
         this.ingredients = ingredients;
         this.outputVariant = outputVariant;
     }
@@ -106,7 +107,7 @@ public class SlimeCreation implements Recipe<SlimeCreation.@NotNull SlimeCreatio
     @Override
     public @NotNull List<RecipeDisplay> display() {
         CompoundTag tag = new CompoundTag();
-        tag.putInt("Variant", this.outputVariant.getId());
+        tag.store("variant", ResourceSlime.Variant.CODEC, this.outputVariant.value());
         ItemStackTemplate resultDisplay = new ItemStackTemplate(ItemInit.RESOURCE_SLIME_BUCKET.get());
         resultDisplay.apply(DataComponentPatch.builder().set(DataComponents.BUCKET_ENTITY_DATA, CustomData.of(tag)).build());
         return List.of(new SlimeCreationDisplay(
@@ -121,12 +122,16 @@ public class SlimeCreation implements Recipe<SlimeCreation.@NotNull SlimeCreatio
     }
 
     public ResourceSlime.Variant getOutputVariant() {
+        return this.outputVariant.value();
+    }
+
+    public Holder<ResourceSlime.Variant> getOutputVariantHolder() {
         return this.outputVariant;
     }
 
     public record SlimeCreationDisplay(List<SlotDisplay> input, SlotDisplay resultVariant, SlotDisplay craftingStation) implements RecipeDisplay {
         public static final MapCodec<SlimeCreationDisplay> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                ExtraCodecs.compactListCodec(SlotDisplay.CODEC).fieldOf("input").forGetter(SlimeCreationDisplay::input),
+                SlotDisplay.CODEC.listOf().fieldOf("input").forGetter(SlimeCreationDisplay::input),
                 SlotDisplay.CODEC.fieldOf("result_variant").forGetter(SlimeCreationDisplay::result),
                 SlotDisplay.CODEC.fieldOf("crafting_station").forGetter(SlimeCreationDisplay::craftingStation)
         ).apply(inst, SlimeCreationDisplay::new));

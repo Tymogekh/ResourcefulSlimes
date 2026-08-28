@@ -8,11 +8,7 @@
     {
       "count": 64,
       "ingredient": "minecraft:coal"
-    },
-    {
-      "count": 32,
-      "ingredient": "resourcefulslimes:lapis_slime_ball"
     }
   ],
-  "output_variant": "coal"
+  "output_variant": "resourcefulslimes:coal"
 }

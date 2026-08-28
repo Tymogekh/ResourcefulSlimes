@@ -8,11 +8,7 @@
     {
       "count": 64,
       "ingredient": "minecraft:diamond"
-    },
-    {
-      "count": 32,
-      "ingredient": "resourcefulslimes:lapis_slime_ball"
     }
   ],
-  "output_variant": "diamond"
+  "output_variant": "resourcefulslimes:diamond"
 }

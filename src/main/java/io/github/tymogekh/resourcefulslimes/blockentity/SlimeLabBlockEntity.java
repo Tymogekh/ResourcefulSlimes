@@ -8,6 +8,7 @@ import io.github.tymogekh.resourcefulslimes.blockentity.slot.MultiHandlerWithChe
 import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -16,11 +17,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.variant.VariantUtils;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -38,7 +41,7 @@ import java.util.Optional;
 public class SlimeLabBlockEntity extends BaseContainerBlockEntity {
     private NonNullList<ItemStack> items;
     private final MultiHandlerWithCheck handler;
-    private ResourceSlime.@Nullable Variant resourceSlimeVariant;
+    private Holder<ResourceSlime.Variant> resourceSlimeVariant;
     private int cooldown = 0;
 
     public SlimeLabBlockEntity(BlockPos worldPosition, BlockState blockState) {
@@ -52,7 +55,7 @@ public class SlimeLabBlockEntity extends BaseContainerBlockEntity {
     protected void loadAdditional(@NotNull ValueInput input) {
         super.loadAdditional(input);
         this.cooldown = input.getIntOr("Cooldown", 0);
-        input.getInt("Variant").ifPresent(id -> this.resourceSlimeVariant = ResourceSlime.Variant.byId(id));
+        VariantUtils.readVariant(input, ResourceSlime.Variant.REGISTRY_KEY).ifPresent(this::setResourceSlimeVariant);
         ContainerHelper.loadAllItems(input, this.items);
     }
 
@@ -61,7 +64,7 @@ public class SlimeLabBlockEntity extends BaseContainerBlockEntity {
         super.saveAdditional(output);
         output.putInt("Cooldown", this.cooldown);
         if (this.resourceSlimeVariant != null) {
-            output.putInt("Variant", this.resourceSlimeVariant.getId());
+            VariantUtils.writeVariant(output, Holder.direct(this.resourceSlimeVariant));
         }
         ContainerHelper.saveAllItems(output, this.items);
     }
@@ -70,9 +73,9 @@ public class SlimeLabBlockEntity extends BaseContainerBlockEntity {
     public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
         CompoundTag tag = super.getUpdateTag(registries);
         if (this.resourceSlimeVariant != null) {
-            tag.putInt("Variant", this.resourceSlimeVariant.getId());
+            this.resourceSlimeVariant.unwrapKey().ifPresent(key -> tag.store("variant", Identifier.CODEC, key.identifier()));
         } else {
-            tag.remove("Variant");
+            tag.remove("variant");
         }
         return tag;
     }
@@ -110,9 +113,9 @@ public class SlimeLabBlockEntity extends BaseContainerBlockEntity {
     @Override
     public void onDataPacket(@NotNull Connection net, @NotNull ValueInput valueInput) {
         super.onDataPacket(net, valueInput);
-        Optional<Integer> id = valueInput.getInt("Variant");
-        if (id.isPresent()) {
-            this.setResourceSlimeVariant(ResourceSlime.Variant.byId(id.get()));
+        Optional<Holder<ResourceSlime.Variant>> variantOptional = VariantUtils.readVariant(valueInput, ResourceSlime.Variant.REGISTRY_KEY);
+        if (variantOptional.isPresent()) {
+            this.setResourceSlimeVariant(variantOptional.get());
         } else {
             this.setResourceSlimeVariant(null);
         }
@@ -128,11 +131,11 @@ public class SlimeLabBlockEntity extends BaseContainerBlockEntity {
         super.preRemoveSideEffects(pos, state);
     }
 
-    public ResourceSlime.@Nullable Variant getResourceSlimeVariant() {
+    public @Nullable Holder<ResourceSlime.Variant> getResourceSlimeVariant() {
         return this.resourceSlimeVariant;
     }
 
-    public void setResourceSlimeVariant(ResourceSlime.@Nullable Variant resourceSlimeVariant) {
+    public void setResourceSlimeVariant(Holder<ResourceSlime.Variant> resourceSlimeVariant) {
         this.resourceSlimeVariant = resourceSlimeVariant;
     }
 
@@ -147,7 +150,7 @@ public class SlimeLabBlockEntity extends BaseContainerBlockEntity {
             if (blockEntity.cooldown <= 0) {
                 recipe = ((ServerLevel) level).recipeAccess().getRecipeFor(ResourcefulSlimes.SLIME_CREATION_RECIPE.get(), new SlimeCreation.SlimeCreationInput(blockEntity.getItems()), level);
                 if (recipe.isPresent()) {
-                    blockEntity.setResourceSlimeVariant(recipe.get().value().getOutputVariant());
+                    blockEntity.setResourceSlimeVariant(recipe.get().value().getOutputVariantHolder());
                     blockEntity.cooldown = 20;
                 } else {
                     blockEntity.setResourceSlimeVariant(null);

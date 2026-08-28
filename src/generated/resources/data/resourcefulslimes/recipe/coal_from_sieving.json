@@ -1,7 +1,7 @@
 {
   "type": "resourcefulslimes:sieving",
   "chance": 1.0,
-  "ingredient": "resourcefulslimes:coal_slime_ball",
+  "required_variant": "resourcefulslimes:coal",
   "result": {
     "id": "minecraft:coal"
   },
