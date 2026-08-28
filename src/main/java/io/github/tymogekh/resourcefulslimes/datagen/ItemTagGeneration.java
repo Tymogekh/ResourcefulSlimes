@@ -1,7 +1,7 @@
 package io.github.tymogekh.resourcefulslimes.datagen;
 
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
-import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.Tags;
@@ -19,11 +19,10 @@ public class ItemTagGeneration extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
-            this.tag(Tags.Items.SLIME_BALLS).add(variant.getDropItem());
-            if(variant.isModded()){
-                this.tag(variant.getResourceTag()).add(variant.getIngotOrGem());
-            }
-        }
+        tag(Tags.Items.SLIME_BALLS)
+                .add(ItemInit.RESOURCE_SLIME_BALL.getKey());
+
+        tag(Tags.Items.BUCKETS_ENTITY_DRY)
+                .add(ItemInit.RESOURCE_SLIME_BUCKET.getKey());
     }
 }

@@ -1,7 +1,7 @@
 {
   "type": "resourcefulslimes:sieving",
   "chance": 1.0,
-  "ingredient": "resourcefulslimes:quartz_slime_ball",
+  "required_variant": "resourcefulslimes:quartz",
   "result": {
     "id": "minecraft:quartz"
   },

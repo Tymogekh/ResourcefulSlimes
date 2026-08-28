@@ -8,11 +8,7 @@
     {
       "count": 64,
       "ingredient": "minecraft:quartz"
-    },
-    {
-      "count": 32,
-      "ingredient": "resourcefulslimes:lapis_slime_ball"
     }
   ],
-  "output_variant": "quartz"
+  "output_variant": "resourcefulslimes:quartz"
 }

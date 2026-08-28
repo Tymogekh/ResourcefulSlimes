@@ -1,2 +1,5 @@
-// 26.1.2	2026-05-21T17:54:45.5442036	Loot Tables
-16dc4738c0aefc6f398a995b22e66bbd386bae61 data/resourcefulslimes/loot_table/entities/resource_slime.json
+// 26.2	2026-08-21T21:10:30.1871142	Loot Tables
+be786f23038cc46a7d772b5c13c1a328b4ec7177 data/resourcefulslimes/loot_table/blocks/slime_feeder.json
+a2786aa9f1265a03062ca5f30cd2e139d95c5f5e data/resourcefulslimes/loot_table/blocks/slime_lab.json
+873deba5346a0395fed574037fa6b205b3bc0b38 data/resourcefulslimes/loot_table/blocks/slime_sieve.json
+bfc574ce92be8471dfbb81929bb75ea2f42db878 data/resourcefulslimes/loot_table/entities/resource_slime.json

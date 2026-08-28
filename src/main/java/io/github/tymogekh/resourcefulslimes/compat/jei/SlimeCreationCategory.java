@@ -24,6 +24,8 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Objects;
+
 public class SlimeCreationCategory implements IRecipeCategory<SlimeCreation> {
     private final IDrawable icon;
     private final IDrawable redstoneSign;
@@ -80,8 +82,8 @@ public class SlimeCreationCategory implements IRecipeCategory<SlimeCreation> {
             }
         }
         CompoundTag tag = new CompoundTag();
-        tag.putInt("Variant", recipe.getOutputVariant().getId());
-        ItemStack itemStack = new ItemStack(ItemInit.RESOURCE_SLIME_BUCKET.get());
+        tag.store("variant", Identifier.CODEC, Objects.requireNonNull(recipe.getOutputVariantHolder().getKey()).identifier());
+        ItemStack itemStack = ItemInit.RESOURCE_SLIME_BUCKET.get().getDefaultInstance();
         itemStack.set(DataComponents.BUCKET_ENTITY_DATA, CustomData.of(tag));
         builder.addOutputSlot(117, 36).add(itemStack);
     }

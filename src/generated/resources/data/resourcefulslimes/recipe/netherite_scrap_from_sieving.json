@@ -1,7 +1,7 @@
 {
   "type": "resourcefulslimes:sieving",
-  "chance": 0.25,
-  "ingredient": "resourcefulslimes:netherite_slime_ball",
+  "chance": 0.1,
+  "required_variant": "resourcefulslimes:netherite",
   "result": {
     "id": "minecraft:netherite_scrap"
   },

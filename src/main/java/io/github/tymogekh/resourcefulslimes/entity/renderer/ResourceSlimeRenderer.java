@@ -42,6 +42,6 @@ public class ResourceSlimeRenderer extends SlimeRenderer {
     @Override
     public void extractRenderState(@NotNull Slime p_362664_, @NotNull SlimeRenderState p_365237_, float p_361099_) {
         super.extractRenderState(p_362664_, p_365237_, p_361099_);
-        ((ResourceSlimeRenderState) p_365237_).color = ((ResourceSlime) p_362664_).getVariant().getColor();
+        ((ResourceSlimeRenderState) p_365237_).color = ((ResourceSlime) p_362664_).getVariant().value().tint();
     }
 }

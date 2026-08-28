@@ -1,25 +1,5 @@
 {
   "values": [
-    "resourcefulslimes:cobblestone_slime_ball",
-    "resourcefulslimes:iron_slime_ball",
-    "resourcefulslimes:gold_slime_ball",
-    "resourcefulslimes:copper_slime_ball",
-    "resourcefulslimes:netherite_slime_ball",
-    "resourcefulslimes:lapis_slime_ball",
-    "resourcefulslimes:redstone_slime_ball",
-    "resourcefulslimes:emerald_slime_ball",
-    "resourcefulslimes:diamond_slime_ball",
-    "resourcefulslimes:quartz_slime_ball",
-    "resourcefulslimes:coal_slime_ball",
-    "resourcefulslimes:amethyst_slime_ball",
-    "resourcefulslimes:nickel_slime_ball",
-    "resourcefulslimes:silver_slime_ball",
-    "resourcefulslimes:lead_slime_ball",
-    "resourcefulslimes:zinc_slime_ball",
-    "resourcefulslimes:uranium_slime_ball",
-    "resourcefulslimes:tin_slime_ball",
-    "resourcefulslimes:aluminium_slime_ball",
-    "resourcefulslimes:osmium_slime_ball",
-    "resourcefulslimes:certus_slime_ball"
+    "resourcefulslimes:resource_slime_ball"
   ]
 }

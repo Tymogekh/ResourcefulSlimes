@@ -8,11 +8,7 @@
     {
       "count": 64,
       "ingredient": "minecraft:emerald"
-    },
-    {
-      "count": 32,
-      "ingredient": "resourcefulslimes:lapis_slime_ball"
     }
   ],
-  "output_variant": "emerald"
+  "output_variant": "resourcefulslimes:emerald"
 }

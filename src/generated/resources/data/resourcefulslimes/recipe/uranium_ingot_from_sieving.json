@@ -1,9 +1,0 @@
-{
-  "type": "resourcefulslimes:sieving",
-  "chance": 0.5,
-  "ingredient": "resourcefulslimes:uranium_slime_ball",
-  "result": {
-    "id": "resourcefulslimes:uranium_ingot"
-  },
-  "ticks": 400
-}

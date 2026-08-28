@@ -1,7 +1,7 @@
 {
   "type": "resourcefulslimes:sieving",
   "chance": 0.5,
-  "ingredient": "resourcefulslimes:redstone_slime_ball",
+  "required_variant": "resourcefulslimes:redstone",
   "result": {
     "id": "minecraft:redstone"
   },

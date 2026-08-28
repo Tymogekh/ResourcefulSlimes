@@ -1,9 +1,0 @@
-{
-  "type": "resourcefulslimes:sieving",
-  "chance": 0.5,
-  "ingredient": "resourcefulslimes:certus_slime_ball",
-  "result": {
-    "id": "resourcefulslimes:certus_quartz"
-  },
-  "ticks": 400
-}

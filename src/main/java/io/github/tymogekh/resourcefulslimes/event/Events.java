@@ -6,12 +6,16 @@ import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeLabScreen;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeSieveScreen;
 import io.github.tymogekh.resourcefulslimes.compat.jei.SlimesJEIPlugin;
 import io.github.tymogekh.resourcefulslimes.datagen.*;
+import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
 import io.github.tymogekh.resourcefulslimes.entity.gui.ResourceSlimeScreen;
 import io.github.tymogekh.resourcefulslimes.entity.particle.ItemColoredParticle;
 import io.github.tymogekh.resourcefulslimes.entity.renderer.ResourceSlimeRenderer;
 import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
 import io.github.tymogekh.resourcefulslimes.init.MenuInit;
-import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
+import io.github.tymogekh.resourcefulslimes.item.tints.BucketEntityVariantTint;
+import io.github.tymogekh.resourcefulslimes.item.tints.ResourceSlimeBallTint;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
@@ -27,9 +31,12 @@ import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @EventBusSubscriber(modid = ResourcefulSlimes.MOD_ID)
 public class Events {
@@ -43,15 +50,23 @@ public class Events {
     }
 
     @SubscribeEvent
+    private static void registerDataPackRegistries(DataPackRegistryEvent.NewRegistry event) {
+        event.dataPackRegistry(ResourceSlime.Variant.REGISTRY_KEY, ResourceSlime.Variant.CODEC, ResourceSlime.Variant.CODEC, builder -> builder.sync(true).defaultKey(ResourceSlime.Variant.EMPTY));
+    }
+
+    @SubscribeEvent
     private static void gatherData(GatherDataEvent.Client event) {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
+        event.createDatapackRegistryObjects(new RegistrySetBuilder().add(ResourceSlime.Variant.REGISTRY_KEY, new SlimeVariantGenerator()), Set.of(ResourcefulSlimes.MOD_ID));
+        CompletableFuture<HolderLookup.Provider> provider = event.getLookupProvider();
         event.addProvider(new ModelGenerator(output));
         event.addProvider(new LangGeneration(output, "en_us"));
-        event.addProvider(new ItemTagGeneration(output, event.getLookupProvider()));
+        event.addProvider(new BlockTagsGenerator(output, provider));
+        event.addProvider(new ItemTagGeneration(output, provider));
         event.addProvider(new LootTableProvider(output, Collections.emptySet(),
-                List.of(new LootTableProvider.SubProviderEntry(LootTableGenerator::new, LootContextParamSets.ENTITY)), event.getLookupProvider()));
-        event.addProvider(new RecipeGenerator.Runner(output, event.getLookupProvider()));
+                List.of(new LootTableProvider.SubProviderEntry(EntityLootTableGenerator::new, LootContextParamSets.ENTITY), new LootTableProvider.SubProviderEntry(BlockLootTableGenerator::new, LootContextParamSets.BLOCK)), provider));
+        event.addProvider(new RecipeGenerator.Runner(output, provider));
     }
 
     @SubscribeEvent
@@ -73,7 +88,8 @@ public class Events {
 
     @SubscribeEvent
     private static void itemTint(RegisterColorHandlersEvent.ItemTintSources event) {
-        event.register(Identifier.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "resource_slime_bucket"), ResourceSlimeBucket.VariantTint.MAP_CODEC);
+        event.register(Identifier.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "resource_slime_bucket"), BucketEntityVariantTint.MAP_CODEC);
+        event.register(Identifier.fromNamespaceAndPath(ResourcefulSlimes.MOD_ID, "resource_slime_ball"), ResourceSlimeBallTint.MAP_CODEC);
     }
 
     @SubscribeEvent
@@ -83,8 +99,7 @@ public class Events {
 
     @SubscribeEvent
     private static void onDataPackSync(OnDatapackSyncEvent event) {
-        event.sendRecipes(ResourcefulSlimes.SIEVING_RECIPE.get());
-        event.sendRecipes(ResourcefulSlimes.SLIME_CREATION_RECIPE.get());
+        event.sendRecipes(ResourcefulSlimes.SIEVING_RECIPE.get(), ResourcefulSlimes.SLIME_CREATION_RECIPE.get());
     }
 
     @SubscribeEvent

@@ -4,6 +4,7 @@ import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.blockentity.SlimeSieveBlockEntity;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.ModifiedSlot;
 import io.github.tymogekh.resourcefulslimes.init.BlockInit;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import io.github.tymogekh.resourcefulslimes.init.MenuInit;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -30,7 +31,7 @@ public class SlimeSieveMenu extends AbstractContainerMenu {
         this.blockEntity = (SlimeSieveBlockEntity) blockEntity;
         Level level = inventory.player.level();
         addSlot(new ModifiedSlot(this.blockEntity, 0, 55, 35,
-                stack -> !level.isClientSide() && ((ServerLevel) level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SIEVING_RECIPE.get()).stream().anyMatch(rec -> rec.value().getIngredient().test(stack))));
+                stack -> !level.isClientSide() && ((ServerLevel) level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SIEVING_RECIPE.get()).stream().anyMatch(rec -> stack.is(ItemInit.RESOURCE_SLIME_BALL.get()))));
         addSlot(new ModifiedSlot(this.blockEntity, 1, 116, 35, stack -> false));
         for(int column = 0; column < 3; column++){
             for(int row = 0; row < 9; row++){

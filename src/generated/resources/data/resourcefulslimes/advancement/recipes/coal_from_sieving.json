@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_coal_slime_ball": {
+    "has_resource_slime_ball": {
       "conditions": {
         "items": [
           {
-            "items": "resourcefulslimes:coal_slime_ball"
+            "items": "resourcefulslimes:resource_slime_ball"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_coal_slime_ball"
+      "has_resource_slime_ball"
     ]
   ],
   "rewards": {

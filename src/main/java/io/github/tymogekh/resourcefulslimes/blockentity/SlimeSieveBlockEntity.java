@@ -5,6 +5,7 @@ import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeSieveMenu;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.Sieving;
 import io.github.tymogekh.resourcefulslimes.blockentity.slot.MultiHandlerWithCheck;
 import io.github.tymogekh.resourcefulslimes.init.BlockEntityInit;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -16,6 +17,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,6 +38,7 @@ import java.util.Optional;
 
 public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
 
+    private final RandomSource random = RandomSource.create();
     private NonNullList<ItemStack> items;
     private final MultiHandlerWithCheck handler;
     private int sievingProgress = 0;
@@ -45,7 +48,7 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
         super(BlockEntityInit.SLIME_SIEVE_ENTITY.get(), p_155077_, p_155078_);
         this.items = NonNullList.withSize(2, ItemStack.EMPTY);
         this.handler = new MultiHandlerWithCheck(this.items, stack -> this.level != null && !this.level.isClientSide() &&
-                ((ServerLevel) this.level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SIEVING_RECIPE.get()).stream().anyMatch(rec -> rec.value().getIngredient().test(stack.toStack())));
+                ((ServerLevel) this.level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SIEVING_RECIPE.get()).stream().anyMatch(rec -> stack.is(ItemInit.RESOURCE_SLIME_BALL.get()) && rec.value().matches(new Sieving.SievingRecipeInput(stack.toStack()), this.level)));
     }
 
     @Override
@@ -66,7 +69,7 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
-        CompoundTag tag = new CompoundTag();
+        CompoundTag tag = super.getUpdateTag(registries);
         tag.putInt("SievingProgress", this.sievingProgress);
         return tag;
     }
@@ -87,9 +90,9 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
             }
             if (optional.isPresent()) {
                 Sieving recipe = optional.get().value();
-                ItemStack expectedResult = recipe.getResult().create().copy();
+                ItemStack expectedResult = recipe.getResult().create();
                 if (!ingredient.isEmpty() && result.getCount() < 64 && result.isEmpty() || result.is(expectedResult.getItem())) {
-                    if (slimeSieve.getSievingProgress() < recipe.getTicks()) {
+                    if (slimeSieve.getSievingProgress() < slimeSieve.getSievingTicks(recipe)) {
                         slimeSieve.sievingProgress += 1;
                         if (slimeSieve.getSievingProgress() % 10 == 0) {
                             level.playSound(null, pos, SoundEvents.SLIME_BLOCK_STEP, SoundSource.BLOCKS, 0.5F, 1.0F);
@@ -102,7 +105,7 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
                             result.setCount(result.getCount() + 1);
                         }
                         ingredient.shrink(1);
-                        if (recipe.getChance() >= Math.random()) {
+                        if (recipe.getChance() >= slimeSieve.random.nextFloat()) {
                             slimeSieve.items.set(1, result);
                         }
                         level.playSound(null, pos, SoundEvents.SLIME_BLOCK_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -146,7 +149,7 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return slot == 0 && this.level != null && !this.level.isClientSide() && ((ServerLevel) this.level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SIEVING_RECIPE.get()).stream().anyMatch(rec -> rec.value().getIngredient().test(stack)) && super.canPlaceItem(slot, stack);
+        return slot == 0 && this.level != null && !this.level.isClientSide() && ((ServerLevel) this.level).recipeAccess().recipeMap().byType(ResourcefulSlimes.SIEVING_RECIPE.get()).stream().anyMatch(rec -> stack.is(ItemInit.RESOURCE_SLIME_BALL.get()) && rec.value().matches(new Sieving.SievingRecipeInput(stack), this.level) && super.canPlaceItem(slot, stack));
     }
 
     public int getSievingProgress() {
@@ -155,6 +158,10 @@ public class SlimeSieveBlockEntity extends BaseContainerBlockEntity {
 
     public MultiHandlerWithCheck getHandler() {
         return this.handler;
+    }
+
+    protected int getSievingTicks(Sieving recipe) {
+        return recipe.getTicks();
     }
 
     @Override

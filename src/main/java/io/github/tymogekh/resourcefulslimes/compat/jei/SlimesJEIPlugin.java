@@ -5,6 +5,7 @@ import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeLabScreen;
 import io.github.tymogekh.resourcefulslimes.blockentity.gui.SlimeSieveScreen;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.Sieving;
 import io.github.tymogekh.resourcefulslimes.blockentity.recipe.SlimeCreation;
+import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -12,6 +13,8 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,4 +53,11 @@ public class SlimesJEIPlugin implements IModPlugin {
         registration.addRecipeClickArea(SlimeSieveScreen.class, 81, 34, 21, 17, SIEVING_TYPE);
         registration.addRecipeClickArea(SlimeLabScreen.class, 72, 34, 16, 20, SLIME_CREATION_TYPE);
     }
+
+    @Override
+    public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
+        registration.registerFromDataComponentTypes(ItemInit.RESOURCE_SLIME_BALL.get(), ResourcefulSlimes.RESOURCE_SLIME_VARIANT.get());
+        registration.registerFromDataComponentTypes(ItemInit.RESOURCE_SLIME_BUCKET.get(), DataComponents.BUCKET_ENTITY_DATA);
+    }
+
 }

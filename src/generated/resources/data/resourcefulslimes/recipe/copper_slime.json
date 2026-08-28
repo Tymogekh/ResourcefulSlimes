@@ -8,11 +8,7 @@
     {
       "count": 64,
       "ingredient": "minecraft:copper_ingot"
-    },
-    {
-      "count": 32,
-      "ingredient": "resourcefulslimes:cobblestone_slime_ball"
     }
   ],
-  "output_variant": "copper"
+  "output_variant": "resourcefulslimes:copper"
 }

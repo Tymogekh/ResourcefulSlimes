@@ -4,8 +4,8 @@ import io.github.tymogekh.resourcefulslimes.init.BlockInit;
 import io.github.tymogekh.resourcefulslimes.init.ItemInit;
 import io.github.tymogekh.resourcefulslimes.ResourcefulSlimes;
 import io.github.tymogekh.resourcefulslimes.block.SlimeFeederBlock;
-import io.github.tymogekh.resourcefulslimes.entity.ResourceSlime;
-import io.github.tymogekh.resourcefulslimes.item.ResourceSlimeBucket;
+import io.github.tymogekh.resourcefulslimes.item.tints.BucketEntityVariantTint;
+import io.github.tymogekh.resourcefulslimes.item.tints.ResourceSlimeBallTint;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
@@ -17,7 +17,6 @@ import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.data.PackOutput;
-import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.NotNull;
 
 public class ModelGenerator extends ModelProvider {
@@ -53,13 +52,7 @@ public class ModelGenerator extends ModelProvider {
         itemModels.itemModelOutput.accept(ItemInit.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get(), ItemModelUtils.plainModel(itemModels.createFlatItemModel(ItemInit.RANDOM_RESOURCE_SLIME_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM)));
         itemModels.itemModelOutput.accept(ItemInit.SLIMEPEDIA.get(), ItemModelUtils.plainModel(itemModels.createFlatItemModel(ItemInit.SLIMEPEDIA.get(), ModelTemplates.FLAT_ITEM)));
         itemModels.itemModelOutput.accept(ItemInit.RESOURCE_SLIME_BUCKET.get(), ItemModelUtils.tintedModel(itemModels.generateLayeredItem(ItemInit.RESOURCE_SLIME_BUCKET.get(), new Material(mcLocation("item/bucket")), new Material(modLocation("item/resource_slime_bucket"))),
-                ItemModelUtils.constantTint(-1), new ResourceSlimeBucket.VariantTint(-1)));
-        itemModels.itemModelOutput.accept(ItemInit.RESOURCE_SLIME_BALL.get(), ItemModelUtils.plainModel(itemModels.createFlatItemModel(ItemInit.RESOURCE_SLIME_BALL.get(), ModelTemplates.FLAT_ITEM)));
-        for(ResourceSlime.Variant variant : ResourceSlime.Variant.values()){
-            itemModels.itemModelOutput.accept(variant.getDropItem(), ItemModelUtils.tintedModel(itemModels.createFlatItemModel(variant.getDropItem(), ItemInit.RESOURCE_SLIME_BALL.get(), ModelTemplates.FLAT_ITEM), ItemModelUtils.constantTint(ARGB.opaque(variant.getColor()))));
-            if(variant.isModded()) {
-                itemModels.itemModelOutput.accept(variant.getIngotOrGem(), ItemModelUtils.plainModel(itemModels.createFlatItemModel(variant.getIngotOrGem(), ModelTemplates.FLAT_ITEM)));
-            }
-        }
+                ItemModelUtils.constantTint(-1), new BucketEntityVariantTint(-1)));
+        itemModels.itemModelOutput.accept(ItemInit.RESOURCE_SLIME_BALL.get(), ItemModelUtils.tintedModel(itemModels.createFlatItemModel(ItemInit.RESOURCE_SLIME_BALL.get(), ModelTemplates.FLAT_ITEM), new ResourceSlimeBallTint(-1)));
     }
 }

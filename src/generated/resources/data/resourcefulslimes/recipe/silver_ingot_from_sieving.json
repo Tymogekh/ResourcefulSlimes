@@ -1,9 +1,0 @@
-{
-  "type": "resourcefulslimes:sieving",
-  "chance": 0.5,
-  "ingredient": "resourcefulslimes:silver_slime_ball",
-  "result": {
-    "id": "resourcefulslimes:silver_ingot"
-  },
-  "ticks": 400
-}
