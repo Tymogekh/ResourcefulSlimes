@@ -1,4 +1,4 @@
-2.0.0
+2.1.0
 * Moved some files
 * Slime variants are now editable with datapacks
 * Removed mod's ingots and gems
